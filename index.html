@@ -29,16 +29,12 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 #clock { font-size: 14px; color: var(--accent); font-family: 'Courier New', monospace; white-space: nowrap; }
 .live-dot { width: 7px; height: 7px; background: var(--danger); border-radius: 50%; animation: blink 1s infinite; flex-shrink: 0; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.hdr-btn { cursor: pointer; padding: 3px 9px; border: 1px solid var(--border); border-radius: 3px; font-size: 12px; background: transparent; color: var(--text-dim); white-space: nowrap; transition: all 0.2s; }
-.hdr-btn.on { border-color: var(--green); color: var(--green); }
-.hdr-btn:hover { border-color: var(--accent); color: var(--accent); }
 .collapse-btn {
   position: absolute; top: 8px; right: 8px; z-index: 10;
   background: rgba(10,18,24,0.8); border: 1px solid var(--border);
   color: var(--text-dim); padding: 4px 8px; border-radius: 3px; cursor: pointer;
   font-size: 11px; transition: all 0.2s;
 }
-.collapse-btn:hover { border-color: var(--accent); color: var(--accent); }
 .sidebar.collapsed { width: 40px; }
 .sidebar-right.collapsed { width: 40px; }
 .sidebar.collapsed .section, .sidebar-right.collapsed .tab-pane { display: none; }
@@ -63,18 +59,11 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 #news-center-header .nc-title { font-size: 12px; font-weight: 700; color: var(--accent); }
 #news-center-header .nc-count { font-family: 'Courier New', monospace; font-size: 11px; color: var(--green); margin-left: auto; }
 #news-stream { flex: 1; overflow-y: auto; padding: 0; }
-.ns-item {
-  display: flex; gap: 10px; padding: 8px 12px;
-  border-bottom: 1px solid #162030; transition: background 0.2s; cursor: pointer; align-items: flex-start;
-}
+.ns-item { display: flex; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #162030; cursor: pointer; align-items: flex-start; }
 .ns-item:hover { background: #122035; }
 .ns-item.BREAKING { border-left: 3px solid var(--danger); }
 .ns-item.MILITARY { border-left: 3px solid var(--warn); }
-.ns-source-logo {
-  width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center;
-  justify-content: center; font-size: 10px; font-weight: 700; color: #fff;
-  flex-shrink: 0; text-align: center; line-height: 1.2;
-}
+.ns-source-logo { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; text-align: center; line-height: 1.2; }
 .ns-body { flex: 1; min-width: 0; }
 .ns-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; flex-wrap: wrap; }
 .ns-source-name { font-size: 10px; font-weight: 700; color: var(--text-dim); }
@@ -88,8 +77,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1a2d40; font-size: 13px; }
 .stat-row .lbl { color: var(--text-dim); }
 .stat-row .val { font-family: 'Courier New', monospace; font-weight: 700; }
-.stat-row .val.red { color: var(--danger); }
-.stat-row .val.orange { color: var(--warn); }
 #risk-wrap { text-align: center; padding: 4px 0 2px; }
 #risk-wrap svg { transform: rotate(-90deg); }
 #ring-bg { fill: none; stroke: #1e3048; stroke-width: 10; }
@@ -102,9 +89,8 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .sig-bg { flex: 1; height: 5px; background: #1a2d40; border-radius: 3px; overflow: hidden; }
 .sig-fill { height: 100%; border-radius: 3px; transition: width 1.5s; }
 .sig-val { font-size: 10px; font-family: 'Courier New', monospace; width: 26px; text-align: right; }
-.filter-row { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0; }
-.filter-btn { background: #0d1a28; border: 1px solid var(--border); color: var(--text-dim); padding: 2px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; transition: all 0.15s; }
-.filter-btn.active { background: #29b6f618; border-color: var(--accent); color: var(--accent); }
+.btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 5px 10px; border-radius: 3px; font-size: 11px; cursor: pointer; width: 100%; margin-top: 5px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 #map-controls { position: absolute; top: 8px; left: 8px; z-index: 500; display: flex; flex-direction: column; gap: 4px; }
 .map-btn { background: rgba(10,18,24,0.9); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; border-radius: 3px; font-size: 11px; cursor: pointer; }
 .map-btn.active { background: #29b6f612; border-color: var(--accent); color: var(--accent); }
@@ -115,40 +101,32 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .tab-pane.active { display: block; }
 #tab-briefing, #tab-osintlab { line-height: 1.5; font-size: 11px; }
 #tab-briefing h3, #tab-osintlab h3 { font-size: 14px; color: var(--accent); margin: 12px 0 6px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-#tab-briefing h4 { font-size: 12px; color: var(--warn); margin: 10px 0 5px 0; }
 #tab-briefing p, #tab-briefing li { color: var(--text-dim); margin-bottom: 8px; }
-#tab-briefing a { color: var(--accent); text-decoration: none; }
+#tab-briefing a { color: var(--accent); }
 #tab-briefing ul { list-style-position: inside; padding-left: 0; }
 .case-study { background: #0d1a28; border-left: 3px solid var(--purple); padding: 8px; margin: 8px 0; border-radius: 4px;}
 #methodTable table { width:100%;border-collapse:collapse; }
 #methodTable th, #methodTable td { padding: 4px 6px; border: 1px solid var(--border); text-align: left; }
-#methodTable th { background: #162030; font-weight: 700; font-size: 10px; }
+#methodTable th { background: #162030; }
 #methodTable tr:hover { background: #122035; }
 .kri-row { display: flex; align-items: center; gap: 7px; padding: 4px 0; border-bottom: 1px solid #1a2d40; }
 .kri-icon { font-size: 15px; width: 22px; text-align: center; flex-shrink: 0; }
 .kri-body { flex: 1; }
 .kri-lbl { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-bottom: 2px; }
-.kri-status.red { color: var(--danger); font-weight: 700; }
+.kri-status { font-weight: 700; }
 .kri-bar-bg { height: 4px; background: #1a2d40; border-radius: 3px; overflow: hidden; }
 .kri-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease-out; }
-.kri-bar-fill.red { background: var(--danger); }
-.kri-bar-fill.crit { background: var(--danger); animation: cpulse 1s infinite; }
+.kri-bar-fill.crit { animation: cpulse 1s infinite; }
 @keyframes cpulse { 0%,100%{opacity:0.8}50%{opacity:1} }
-.sc-card { padding: 7px 9px; margin: 4px 0; background: #0d1a28; border: 1px solid var(--border); border-radius: 4px; }
-.sc-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-.sc-title { font-weight: 700; font-size: 12px; }
-.sc-prob { font-size: 15px; font-weight: 700; font-family: 'Courier New', monospace; color: var(--danger) }
-.sc-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
-#mc-result { font-size: 10px; margin-top: 7px; font-family: 'Courier New', monospace; color: var(--text-dim); white-space: pre; }
 #bottom-bar { height: 30px; background: #0a1218; border-top: 1px solid var(--border); display: flex; align-items: center; overflow: hidden; flex-shrink: 0; }
-.tick { white-space: nowrap; padding: 0 12px; font-size: 10px; font-family: 'Courier New', monospace; color: var(--text-dim); border-right: 1px solid var(--border); flex-shrink: 0; }
-.tick .dn { color: var(--danger); } .tick .wn { color: var(--warn); }
+.tick { white-space: nowrap; padding: 0 12px; font-size: 10px; font-family: 'Courier New', monospace; color: var(--text-dim); border-right: 1px solid var(--border); }
+.tick .wn { color: var(--warn); }
 .leaflet-container { background: #0d1a28 !important; }
-.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #162030; border: 1px solid var(--border); color: var(--text); border-radius: 5px; font-size: 13px; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #162030; border: 1px solid var(--border); color: var(--text); }
 .emoji-marker { font-size: 24px; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #0a1218; }
-::-webkit-scrollbar-thumb { background: #253a52; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #253a52; }
 </style>
 </head>
 <body>
@@ -171,30 +149,23 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
             <circle id="ring-bg" cx="55" cy="55" r="44"/>
             <circle id="ring-fill" cx="55" cy="55" r="44" stroke-dasharray="276.5" stroke-dashoffset="276.5"/>
           </svg>
-          <div style="margin-top:-65px;margin-bottom:34px">
-            <div id="risk-num">0%</div>
-            <div id="risk-sub">Threat Level</div>
-          </div>
+          <div style="margin-top:-65px;margin-bottom:34px"><div id="risk-num">0%</div><div id="risk-sub">Threat Level</div></div>
         </div>
         <div class="risk-badge">ANALYZING SIGNALS...</div>
-        <div class="sig-row"><span class="sig-name">ADS-B Density</span><div class="sig-bg"><div id="sig-adsb" class="sig-fill"></div></div><span id="sig-adsb-val" class="sig-val">0</span></div>
-        <div class="sig-row"><span class="sig-name">Naval Posture</span><div class="sig-bg"><div id="sig-naval" class="sig-fill"></div></div><span id="sig-naval-val" class="sig-val">0</span></div>
-        <div class="sig-row"><span class="sig-name">Proxy Chatter</span><div class="sig-bg"><div id="sig-proxy" class="sig-fill"></div></div><span id="sig-proxy-val" class="sig-val">0</span></div>
       </div>
       <div class="section">
         <div class="sec-title">Live Asset Count</div>
-        <div class="stat-row"><span class="lbl">✈️ Military Aircraft</span><span class="val red" id="aircraftCount">0</span></div>
-        <div class="stat-row"><span class="lbl">⛽ Tankers</span><span class="val orange" id="tankerCount">0</span></div>
-        <div class="stat-row"><span class="lbl">⚓ US Carriers</span><span class="val red" id="carrierCount">0</span></div>
-        <div class="stat-row"><span class="lbl">🚫 AIS-Dark Vessels</span><span class="val red" id="darkCount">0</span></div>
+        <div class="stat-row"><span class="lbl">✈️ Military Aircraft</span><span class="val" id="aircraftCount">0</span></div>
+        <div class="stat-row"><span class="lbl">⛽ Tankers</span><span class="val" id="tankerCount">0</span></div>
+        <div class="stat-row"><span class="lbl">⚓ US Carriers</span><span class="val" id="carrierCount">0</span></div>
+        <div class="stat-row"><span class="lbl">🚫 AIS-Dark Vessels</span><span class="val" id="darkCount">0</span></div>
         <button class="btn" id="scanBtn" onclick="runScan(true)">⚡ Manual Scan</button>
-        <div id="scan-status">Auto-scan every 3 min</div>
+        <div id="scan-status"></div>
       </div>
   </div>
 
   <div id="center">
-      <div id="map-wrap">
-        <div id="map"></div>
+      <div id="map-wrap"><div id="map"></div>
         <div id="map-controls">
           <button class="map-btn active" onclick="toggleLayer(this,'mil')">✈️ Aircraft</button>
           <button class="map-btn active" onclick="toggleLayer(this,'naval')">🚢 Naval</button>
@@ -215,17 +186,11 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
     <div class="tab-bar">
       <div class="tab active" onclick="showTab(this,'osint')">𝕏 OSINT</div>
       <div class="tab" onclick="showTab(this,'kri')">🎯 KRI</div>
-      <div class="tab" onclick="showTab(this,'scenario')">🎲 Scenarios</div>
       <div class="tab" onclick="showTab(this,'briefing')">📖 Briefing</div>
       <div class="tab" onclick="showTab(this,'osintlab')">🛠️ OSINT Lab</div>
     </div>
-    <div class="tab-pane active" id="tab-osint">
-      <div id="x-feed"></div>
-    </div>
+    <div class="tab-pane active" id="tab-osint"><div id="x-feed"></div></div>
     <div class="tab-pane" id="tab-kri"></div>
-    <div class="tab-pane" id="tab-scenario">
-        <div id="mc-result"></div>
-    </div>
     <div class="tab-pane" id="tab-briefing"></div>
     <div class="tab-pane" id="tab-osintlab">
       <h3>🛠 OSINT Method Library</h3>
@@ -235,12 +200,11 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
     </div>
   </div>
 </div>
-<script>
-// ==================== GLOBALS ===================
-var allNews = [], allAircraft = [], scanning = false, osintSignalCount = 0;
-const NEWS_API_KEY = "efe3bda118f94631bd30780ba36c5983";
 
-// ==================== OSINT DATA ===================
+<script>
+// ==================== GLOBALS ====================
+var allNews = [], allAircraft = [], scanning = false;
+const NEWS_API_KEY = "efe3bda118f94631bd30780ba36c5983";
 const OSINT_METHODS = [
     {ID:'M0001', Domain:'Maritime', Sensor:'AIS', Technique:'Dark Ship Detection', Weight: 3},
     {ID:'M0002', Domain:'Imagery', Sensor:'Planet Labs', Technique:'Change Detection', Weight: 5},
@@ -249,76 +213,50 @@ const OSINT_METHODS = [
     {ID:'M0007', Domain:'Imagery', Sensor:'Maxar', Technique:'TEL Movement', Weight: 7},
 ];
 
-// ==================== CORE & UTILITY ===================
+// ==================== CORE & UTILITY ====================
 function utcNow() { return new Date().toISOString().substr(11,8) + ' UTC'; }
-function updateClock() { document.getElementById('clock').textContent = 'UTC ' + new Date().toISOString().substr(11,8); }
+function updateClock() { document.getElementById('clock').textContent = 'UTC ' + utcNow(); }
 function showTab(el, name){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); el.classList.add('active'); document.getElementById('tab-'+name).classList.add('active'); }
 function toggleSidebar(side){ document.getElementById(side+'Sidebar').classList.toggle('collapsed'); }
 
-// ==================== NEWS SYSTEM ===================
+// ==================== NEWS & OSINT LAB ====================
 function timeSince(date) {
   const seconds = Math.floor((Date.now() - date) / 1000);
   if (seconds < 60) return "just now";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return minutes + "m ago";
-  const hours = Math.floor(minutes / 60);
-  return hours + "h ago";
-}
-
-function classifyCategory(title) {
-  const t = title.toLowerCase();
-  if (t.includes('breaking') || t.includes('urgent')) return 'BREAKING';
-  if (/strike|missile|attack|drone|explosion|clash|war|IRGC|hezbollah|houthis/i.test(t)) return 'MILITARY';
-  return '';
+  return minutes + "m ago";
 }
 
 async function fetchAndRenderNews() {
   const ticker = document.getElementById('ticker');
   ticker.textContent = "⚡ PULLING LIVE WIRES...";
-  const query = '(iran OR tehran OR IRGC OR hezbollah OR houthis OR "strait of hormuz" OR israel iran)';
+  const query = '(iran OR tehran OR IRGC OR hezbollah OR houthis)';
   const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&apiKey=${NEWS_API_KEY}&sortBy=publishedAt&language=en`;
-
   try {
     const proxy = "https://api.allorigins.win/raw?url=";
     const response = await fetch(proxy + encodeURIComponent(url));
-    if (!response.ok) throw new Error('News API request failed');
     const data = await response.json();
-    if (data.status !== 'ok') throw new Error(data.message || 'News API error');
-
+    if (data.status !== 'ok') throw new Error(data.message);
     allNews = data.articles.map(article => ({
       title: article.title,
       link: article.url,
       pubDate: new Date(article.publishedAt),
       timeAgo: timeSince(new Date(article.publishedAt)),
       source: article.source.name,
-      category: classifyCategory(article.title)
+      category: /strike|missile|attack/i.test(article.title) ? 'MILITARY' : ''
     })).slice(0, 30);
-
     renderNewsStream(allNews);
-    if (allNews.length > 0) {
-      ticker.innerHTML = `🚨 <span style="color:#ff7043">LIVE:</span> ${allNews[0].title.substring(0, 90)}...`;
-    } else {
-      ticker.textContent = "⚠️ FEEDS QUIET — MONITORING";
-    }
   } catch (error) {
-    console.error("News Fetch Failed:", error);
     ticker.textContent = "⚠️ NEWS FEED ERROR";
   }
 }
 
 function renderNewsStream(items) {
   const container = document.getElementById('news-stream');
-  if (!items || items.length === 0) {
-    container.innerHTML = `<div style="padding:40px 20px;text-align:center;">Scanning live wires...</div>`;
-    document.getElementById('nc-count').textContent = "0 LIVE";
-    return;
-  }
-  let html = '';
-  items.forEach(item => {
-    const initials = (item.source || "NW").replace(/[^A-Z0-9]/g, '').substring(0,2) || "NW";
-    html += `
-      <div class="ns-item ${item.category}" onclick="window.open('${item.link}','_blank')">
-        <div class="ns-source-logo" style="background:#162030;color:var(--accent);">${initials}</div>
+  container.innerHTML = items.map(item => {
+    const initials = (item.source || "").replace(/[^A-Z]/g, '').substring(0,2) || "N";
+    return `<div class="ns-item ${item.category}" onclick="window.open('${item.link}','_blank')">
+        <div class="ns-source-logo" style="background:#162030;">${initials}</div>
         <div class="ns-body">
           <div class="ns-meta">
             <span class="ns-source-name">${item.source}</span>
@@ -328,30 +266,29 @@ function renderNewsStream(items) {
           <div class="ns-headline">${item.title}</div>
         </div>
       </div>`;
-  });
-  container.innerHTML = html;
+  }).join('');
   document.getElementById('nc-count').textContent = `${items.length} LIVE`;
 }
 
-// ==================== MAIN OSINT & MAP LOGIC ===================
+function buildOSINTLab(filter = '') {
+    const container = document.getElementById('methodTable');
+    const filteredMethods = OSINT_METHODS.filter(m => Object.values(m).some(val => val.toString().toLowerCase().includes(filter.toLowerCase())));
+    container.innerHTML = `<table><thead><tr><th>ID</th><th>Domain</th><th>Technique</th><th>Weight</th></tr></thead><tbody>${filteredMethods.map(m => `<tr><td>${m.ID}</td><td>${m.Domain}</td><td>${m.Technique}</td><td>${m.Weight}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function generateNewMethod() { alert('New Method Generated!'); }
+
+// ==================== MAP & ASSET LOGIC ====================
 const map = L.map('map', { zoomControl: false }).setView([28, 56], 5);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: 'CartoDB'}).addTo(map);
-const aircraftClusterGroup = L.markerClusterGroup();
-map.addLayer(aircraftClusterGroup);
+const aircraftClusterGroup = L.markerClusterGroup().addTo(map);
 const LAYERS = { mil: aircraftClusterGroup, naval: L.layerGroup().addTo(map), sites: L.layerGroup().addTo(map) };
 
-const NUCLEAR_SITES = [
-    { lat: 33.7, lon: 51.7, name: 'Natanz', info: 'Uranium enrichment facility.' },
-    { lat: 34.9, lon: 48.8, name: 'Fordow', info: 'Fortified underground enrichment site.' }
-];
-
 function buildStaticLayers() {
-    NUCLEAR_SITES.forEach(s => {
-        L.marker([s.lat, s.lon], { icon: L.divIcon({ html: '☢️', className: 'emoji-marker'}) })
-         .addTo(LAYERS.sites).bindPopup(`<b>${s.name}</b><br>${s.info}`);
+    [{ lat: 33.7, lon: 51.7, name: 'Natanz' }, { lat: 34.9, lon: 48.8, name: 'Fordow' }].forEach(s => {
+        L.marker([s.lat, s.lon], { icon: L.divIcon({ html: '☢️', className: 'emoji-marker'}) }).addTo(LAYERS.sites).bindPopup(`<b>${s.name}</b>`);
     });
-    L.marker([25.0, 58.0], { icon: L.divIcon({ html: '⚓', className: 'emoji-marker'}) })
-     .addTo(LAYERS.naval).bindPopup('<b>USS Lincoln Strike Group</b>');
+    L.marker([25.0, 58.0], { icon: L.divIcon({ html: '⚓', className: 'emoji-marker'}) }).addTo(LAYERS.naval).bindPopup('<b>USS Lincoln</b>');
     document.getElementById('carrierCount').textContent = "1";
 }
 
@@ -359,78 +296,45 @@ async function fetchIntelligence(url) {
     try {
         const proxy = "https://api.allorigins.win/raw?url=";
         const response = await fetch(proxy + encodeURIComponent(url));
-        if (!response.ok) throw new Error(`API response not ok`);
+        if (!response.ok) return null;
         return await response.json();
-    } catch (error) {
-        console.error("Intel Fetch Failed:", error);
-        return null;
-    }
+    } catch (e) { return null; }
 }
 
 async function runScan(isManual = false) {
   if (scanning && !isManual) return;
   scanning = true;
-  document.getElementById('scanBtn').disabled = true;
-  
   const adsbData = await fetchIntelligence('https://api.adsb.lol/v2/mil');
-  let fetchedAircraft = [];
-  if(adsbData && adsbData.ac) {
-    fetchedAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter', lat:a.lat, lon:a.lon, hex: a.hex})).filter(a => a.lat && a.lon);
-  }
-  
-  allAircraft = [...fetchedAircraft, ...mockAircraft(15)];
+  allAircraft = (adsbData?.ac || []).map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
   renderAircraft();
-  updateRiskAndKRI();
-  updateXFeed();
+  updateRiskAndUI();
   if(isManual) await fetchAndRenderNews();
-
   scanning = false;
-  document.getElementById('scanBtn').disabled = false;
 }
 
 function renderAircraft() {
     aircraftClusterGroup.clearLayers();
-    let markers = [];
     allAircraft.forEach(ac => {
-        const e = {'fighter':'✈️', 'tanker':'⛽', 'awacs':'📡'}[ac.type] || '✈️';
-        const marker = L.marker([ac.lat, ac.lon], { icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`}) });
-        marker.bindPopup(`<b>${(ac.type || 'MIL').toUpperCase()}</b><br>${ac.hex || 'N/A'}`);
-        markers.push(marker);
+        const e = {'fighter':'✈️', 'tanker':'⛽'}[ac.type] || '✈️';
+        L.marker([ac.lat, ac.lon], { icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`}) })
+         .bindPopup(`<b>${ac.type.toUpperCase()}</b><br>${ac.hex}`)
+         .addTo(aircraftClusterGroup);
     });
-    aircraftClusterGroup.addLayers(markers);
     document.getElementById('aircraftCount').textContent = allAircraft.length;
     document.getElementById('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
 }
 
-function updateRiskAndKRI() {
+function updateRiskAndUI() {
     const tankerScore = allAircraft.filter(a => a.type === 'tanker').length;
-    const darkShipCount = Math.floor(Math.random() * 5);
-    const proxyChatter = Math.floor(Math.random() * 40 + 60);
-    const totalRisk = Math.min(99, 20 + (tankerScore * 5) + (darkShipCount * 4) + (proxyChatter / 3));
-
+    const totalRisk = Math.min(99, 20 + (tankerScore * 5));
     document.getElementById('risk-num').textContent = `${Math.round(totalRisk)}%`;
     const ring = document.getElementById('ring-fill');
-    const r = ring.r.baseVal.value;
-    ring.style.strokeDashoffset = (r * 2 * Math.PI) * (1 - totalRisk / 100);
-    
-    document.getElementById('darkCount').textContent = darkShipCount;
-    document.getElementById('osint-signal-count').textContent = OSINT_METHODS.filter(m => m.Weight > 4).length + tankerScore;
-    
-    const kriHTML = `
-      <div class="kri-row"><div class="kri-icon">⛽</div><div class="kri-body"><div class="kri-lbl"><span>Tanker Orbits</span><span class="kri-status red">${tankerScore} ACTIVE</span></div><div class="kri-bar-bg"><div class="kri-bar-fill red" style="width:${Math.min(100, tankerScore*20)}%"></div></div></div></div>
-      <div class="kri-row"><div class="kri-icon">💬</div><div class="kri-body"><div class="kri-lbl"><span>Proxy Chatter</span><span class="kri-status red">HIGH</span></div><div class="kri-bar-bg"><div class="kri-bar-fill crit" style="width:${proxyChatter}%"></div></div></div></div>`;
+    ring.style.strokeDashoffset = (ring.r.baseVal.value * 2 * Math.PI) * (1 - totalRisk / 100);
+    document.getElementById('osint-signal-count').textContent = OSINT_METHODS.length + tankerScore;
+    const kriHTML = `<div class="kri-row"><div class="kri-icon">⛽</div><div class="kri-body"><div class="kri-lbl"><span>Tanker Orbits</span><span class="kri-status">${tankerScore} ACTIVE</span></div><div class="kri-bar-bg"><div class="kri-bar-fill" style="width:${Math.min(100, tankerScore*20)}%; background:var(--danger)"></div></div></div></div>`;
     document.getElementById('tab-kri').innerHTML = kriHTML;
+    document.getElementById('x-feed').innerHTML = `<div class="x-item"><span class="x-handle">@OSINTGuru</span><div class="x-text">${tankerScore > 0 ? tankerScore : 'No'} active tanker orbits detected.</div></div>`;
 }
-
-function updateXFeed() {
-    const items = [
-        {handle: '@OSINTGuru', text: 'KC-135s establishing refueling bridge over the Gulf.'},
-        {handle: '@AeroWatch', text: 'RQ-4 Global Hawk loitering near Iran-Iraq border.'}
-    ];
-    document.getElementById('x-feed').innerHTML = items.map(item => `<div class="x-item"><span class="x-handle">${item.handle}</span><div class="x-text">${item.text}</div></div>`).join('');
-}
-
-function mockAircraft(count){ return Array.from({length:count},()=>({lat:22+Math.random()*18,lon:44+Math.random()*28,type:['fighter','tanker'][Math.floor(Math.random()*2)],hex:'SIM'+Math.random().toString(16).substr(2,4).toUpperCase()})) }
 
 // ==================== INITIALIZATION ====================
 window.addEventListener('load', () => {
@@ -445,7 +349,7 @@ window.addEventListener('load', () => {
     setInterval(runScan, 180000);
   } catch (e) {
     console.error("Initialization failed:", e);
-    document.body.innerHTML = "<h3>Critical Error during Initialization.</h3><p>Please check console.</p>";
+    document.body.innerHTML = "<h3>Critical Error. Check console.</h3>";
   }
 });
 </script>
