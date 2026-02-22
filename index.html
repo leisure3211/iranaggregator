@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <link rel="icon" href="data:,">
 <style>
 :root {
   --bg: #0f1923; --panel: #162030; --panel-dark: #0d1520;
@@ -968,7 +969,7 @@ function renderAircraft() {
       const e = EMAP[ac.type]||'✈️';
       const big = ac.type==='tanker';
       const marker = L.marker([ac.lat,ac.lon],{
-        icon: L.divIcon({html:`<div class="emoji-marker${big?' tanker':''}">$\{e}</div>`,className:'',iconSize:[big?26:20,big?26:20]})
+        icon: L.divIcon({html:`<div class="emoji-marker${big?' tanker':''}">${e}</div>`,className:'',iconSize:[big?26:20,big?26:20]})
       });
       
       marker.bindPopup(`<b>${e} ${(ac.type||'MIL').toUpperCase()}</b> · ${ac.hex}<br><small style="color:#6a8aaa">${ac.gs||'?'} kt · ${(ac.alt||0).toLocaleString()} ft</small><br><br>${ac.type==='tanker'?'⚠️ Tanker orbit = refueling bridge active. Long-range strike package.':ac.type==='awacs'?'📡 AWACS = command & control layer up.':ac.type==='stealth'?'👻 Stealth asset detected.':'Active in theater.'}`);
@@ -1024,6 +1025,21 @@ const ADSB_SOURCES = [
   {name:'Reuters Wire',url:''},
 ];
 
+async function fetchIntelligence(url) {
+    try {
+        const proxy = "https://api.allorigins.win/raw?url="; 
+        const response = await fetch(proxy + encodeURIComponent(url));
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        return await response.json();
+    } catch (error) {
+        console.error("Intelligence Retrieval Failed:", error);
+        document.getElementById('ticker').innerText = "⚠️ FEED ERROR: Check CORS/API Connection";
+        return null;
+    }
+}
+
 async function runScan(manual) {
   manual = manual || false;
   if (scanning) return;
@@ -1039,14 +1055,11 @@ async function runScan(manual) {
     row.innerHTML = `<span class="src-name">${src.name}</span><span class="src-loading">◌</span>`;
     document.getElementById('sourceList').appendChild(row);
     if (src.url) {
-      try {
-        const r = await fetch(src.url);
-        if (r.ok) {
-          const j = await r.json();
-          if (j.ac) merged = merged.concat(j.ac.map(a=>({...a,type:a.t||'fighter'})));
-          if (j.states) merged = merged.concat(j.states.filter(s=>s[6]&&s[5]).map(s=>({lat:s[6],lon:s[5],hex:s[0],gs:s[9],type:'fighter'})));
+        const j = await fetchIntelligence(src.url);
+        if(j){
+            if (j.ac) merged = merged.concat(j.ac.map(a=>({...a,type:a.t||'fighter'})));
+            if (j.states) merged = merged.concat(j.states.filter(s=>s[6]&&s[5]).map(s=>({lat:s[6],lon:s[5],hex:s[0],gs:s[9],type:'fighter'})));
         }
-      } catch(e){}
     }
     row.innerHTML = `<span class="src-name">${src.name}</span><span class="src-ok">✓ ${new Date().toISOString().substr(11,8)}</span>`;
     await new Promise(r=>setTimeout(r,70));
