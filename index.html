@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRAN TENSION MONITOR v9.8 — STABLE</title>
+<title>IRAN TENSION MONITOR v10.0 — FINAL</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -101,7 +101,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 
 <div id="header">
   <div class="logo">🌍 IRAN TENSION MONITOR</div>
-  <div class="badge">v9.8 STABLE</div>
+  <div class="badge">v10.0 FINAL</div>
   <div class="live-dot"></div>
   <div id="ticker">INITIALIZING...</div>
   <div id="clock"></div>
@@ -200,9 +200,10 @@ function buildStaticLayers() {
 
 // ==================== CORE DATA & SCANNING =====================
 async function fetchWithProxy(url) {
-    const proxyUrl = `https://cors.sh/${url}`;
+    const targetUrl = url.replace(/^https?:\/\//, '');
+    const proxyUrl = `https://cors.sh/${targetUrl}`;
     try {
-        const response = await fetch(proxyUrl, { headers: {'x-cors-api-key': 'temp_1234567890'} });
+        const response = await fetch(proxyUrl, {headers: {'x-cors-api-key': 'temp_1234567890'} });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return await response.json();
     } catch (error) {
@@ -216,7 +217,11 @@ async function runScan(isManual = false) {
     scanning = true;
     el('scanBtn').disabled = true;
 
-    const adsbData = await fetchWithProxy('https://api.adsb.lol/v2/mil');
+    const adsbPromise = fetchWithProxy('https://api.adsb.lol/v2/mil');
+    const newsPromise = isManual ? fetchAndRenderNews() : Promise.resolve();
+
+    const [adsbData] = await Promise.all([adsbPromise, newsPromise]);
+
     if (adsbData && adsbData.ac) {
         allAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
     } else {
@@ -226,7 +231,6 @@ async function runScan(isManual = false) {
     
     renderAircraft();
     updateRiskAndUI();
-    if(isManual) await fetchAndRenderNews();
 
     scanning = false;
     el('scanBtn').disabled = false;
@@ -294,8 +298,10 @@ function updateRiskAndUI() {
     
     el('risk-num').textContent = `${Math.round(totalRisk)}%`;
     const ring = el('ring-fill');
-    const r = ring.r.baseVal.value;
-    ring.style.strokeDashoffset = (r * 2 * Math.PI) * (1 - totalRisk / 100);
+    if (ring && ring.r && ring.r.baseVal) {
+        const r = ring.r.baseVal.value;
+        ring.style.strokeDashoffset = (r * 2 * Math.PI) * (1 - totalRisk / 100);
+    }
 
     el('risk-badge').textContent = totalRisk > 70 ? "HIGH ALERT" : totalRisk > 40 ? "ELEVATED" : "NOMINAL";
     el('osint-signal-count').textContent = OSINT_METHODS.length + tankerScore;
@@ -311,10 +317,10 @@ window.addEventListener('load', () => {
     el('methodSearch').addEventListener('input', (e) => buildOSINTLab(e.target.value));
     el('tab-briefing').innerHTML = `<h3>OSINT Summary</h3><p>Fusing multiple open-source intel streams to monitor geopolitical tensions.</p><h4>Core Methods</h4><ul><li><b>IMINT:</b> Imagery analysis</li><li><b>SIGINT:</b> Aircraft & Naval tracking</li><li><b>SOCMINT:</b> Social media & news</li></ul><a href="https://www.bellingcat.com/" target="_blank">Learn More →</a>`;
     
-    fetchAndRenderNews();
-    setInterval(fetchAndRenderNews, 300000); // 5 mins
     runScan(true);
-    setInterval(runScan, 180000); // 3 mins
+    setInterval(() => runScan(false), 180000); // Scan aircraft every 3 mins
+    setInterval(fetchAndRenderNews, 300000); // Scan news every 5 mins
+
 
   } catch (e) {
     console.error("Critical Initialization failed:", e);
