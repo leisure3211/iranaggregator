@@ -200,10 +200,9 @@ function buildStaticLayers() {
 
 // ==================== CORE DATA & SCANNING =====================
 async function fetchWithProxy(url) {
-    const targetUrl = url.replace(/^https?:\/\//, '');
-    const proxyUrl = `https://cors.sh/${targetUrl}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
     try {
-        const response = await fetch(proxyUrl, {headers: {'x-cors-api-key': 'temp_1234567890'} });
+        const response = await fetch(proxyUrl);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return await response.json();
     } catch (error) {
