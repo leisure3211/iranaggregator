@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRAN TENSION MONITOR v11.0 — DUAL-SOURCE AIRCRAFT</title>
+<title>IRAN TENSION MONITOR v11.1 — RESILIENT PROXY</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -109,7 +109,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 
 <div id="header">
   <div class="logo">🌍 IRAN TENSION MONITOR</div>
-  <div class="badge">v11.0 DUAL-SOURCE</div>
+  <div class="badge">v11.1 RESILIENT</div>
   <div class="live-dot"></div>
   <div id="ticker">ATTEMPTING PURE REAL-TIME FEEDS...</div>
   <div id="clock"></div>
@@ -213,33 +213,31 @@ function buildStaticLayers() {
     el('carrierCount').textContent = "1";
 }
 
-// ==================== MULTI-PROXY (best chance for pure real data) ====================
+// ==================== MULTI-PROXY (RESILIENT) ====================
 async function fetchWithProxy(targetUrl) {
-    const proxyList = [
-        (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-        (u) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-        (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`
+    const proxyFns = [
+        async (u) => fetch(`https://cors.sh/${u.replace(/^https?:\/\//, '')}`, { headers: { 'x-cors-api-key': 'temp_1234567890' } }).then(res => res.json()),
+        async (u) => fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`).then(res => res.json()),
+        async (u) => {
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`);
+            const wrapper = await res.json();
+            if (wrapper && wrapper.contents) return JSON.parse(wrapper.contents);
+            throw new Error('Invalid allorigins.win response');
+        }
     ];
 
-    for (const buildProxy of proxyList) {
+    for (const proxyFn of proxyFns) {
         try {
-            const proxyUrl = buildProxy(targetUrl);
-            const res = await fetch(proxyUrl, { cache: 'no-store' });
-            if (!res.ok) continue;
-
-            let data;
-            if (proxyUrl.includes('allorigins.win')) {
-                const wrapper = await res.json();
-                data = JSON.parse(wrapper.contents);
-            } else {
-                data = await res.json();
-            }
-            return data;
+            const data = await proxyFn(targetUrl);
+            return data; // Success
         } catch (e) {
-            console.warn(`Proxy failed for ${targetUrl}: ${e.message}`);
+            console.warn(`A proxy failed for ${targetUrl}: ${e.message}`);
+            // This error is expected when a proxy is down, so we just try the next one.
         }
     }
-    return null;
+
+    console.error(`All proxies failed for ${targetUrl}.`);
+    return null; // Return null if all proxies fail
 }
 
 // ==================== CORE SCANNING (DUAL-SOURCE) ====================
