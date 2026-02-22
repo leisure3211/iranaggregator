@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRAN TENSION MONITOR v10.2 — PURE REAL DATA ONLY</title>
+<title>IRAN TENSION MONITOR v11.0 — DUAL-SOURCE AIRCRAFT</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -92,7 +92,14 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .tick .wn { color: var(--warn); }
 .leaflet-container { background: #0d1a28 !important; }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #162030; border: 1px solid var(--border); color: var(--text); }
-.emoji-marker { font-size: 24px; }
+.emoji-marker { font-size: 18px; line-height: 1; filter: drop-shadow(0 0 3px rgba(41,182,246,0.6)); }
+.emoji-marker.tanker { font-size: 24px; filter: drop-shadow(0 0 5px rgba(255,112,67,0.9)); }
+.marker-cluster-small { background-color: rgba(41, 182, 246, 0.6); }
+.marker-cluster-medium { background-color: rgba(41, 182, 246, 0.8); }
+.marker-cluster-large { background-color: rgba(41, 182, 246, 1.0); }
+.marker-cluster { background-clip: padding-box; border-radius: 20px; color: #fff; font-weight: bold; text-align: center; font-family: 'Courier New', monospace; }
+.marker-cluster div { width: 30px; height: 30px; margin-left: 5px; margin-top: 5px; text-align: center; border-radius: 15px; font: 12px bold; }
+.marker-cluster span { line-height: 30px; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #0a1218; }
 ::-webkit-scrollbar-thumb { background: #253a52; }
@@ -102,7 +109,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 
 <div id="header">
   <div class="logo">🌍 IRAN TENSION MONITOR</div>
-  <div class="badge">v10.2 PURE REAL</div>
+  <div class="badge">v11.0 DUAL-SOURCE</div>
   <div class="live-dot"></div>
   <div id="ticker">ATTEMPTING PURE REAL-TIME FEEDS...</div>
   <div id="clock"></div>
@@ -167,6 +174,7 @@ const OSINT_METHODS = [
     {ID:'M0002', D:'Imagery', T:'Change Detection', W: 5},
     {ID:'M0003', D:'Aviation', T:'Tanker Surge', W: 4},
 ];
+const EMAP = { fighter:'✈️', tanker:'⛽', cargo:'📦', awacs:'📡', drone:'🛸', helicopter:'🚁', recon:'👁️', bomber:'🛩️', stealth:'👻', transport:'🚐', uav:'🛰️', maritime:'⚓' };
 let allNews = [], allAircraft = [], scanning = false;
 
 // ==================== DOM & UTILITIES ====================
@@ -181,7 +189,13 @@ const toggleSidebar = (side) => el(side+'Sidebar').classList.toggle('collapsed')
 // ==================== MAP & LAYERS =====================
 const map = L.map('map', { zoomControl: false }).setView([28, 56], 5);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: 'CartoDB' }).addTo(map);
-const aircraftClusterGroup = L.markerClusterGroup().addTo(map);
+const aircraftClusterGroup = L.markerClusterGroup({
+  chunkedLoading: true,
+  spiderfyOnMaxZoom: true,
+  showCoverageOnHover: true,
+  zoomToBoundsOnClick: true
+});
+aircraftClusterGroup.addTo(map);
 const LAYERS = { mil: aircraftClusterGroup, naval: L.layerGroup().addTo(map), sites: L.layerGroup().addTo(map) };
 
 const toggleLayer = (btn, name) => {
@@ -222,30 +236,53 @@ async function fetchWithProxy(targetUrl) {
             }
             return data;
         } catch (e) {
-            console.warn(`Proxy failed for ${targetUrl}`);
+            console.warn(`Proxy failed for ${targetUrl}: ${e.message}`);
         }
     }
-    return null;   // ALL proxies failed → trigger big red error
+    return null;
 }
 
-// ==================== CORE SCANNING (PURE REAL ONLY) ====================
+// ==================== CORE SCANNING (DUAL-SOURCE) ====================
 async function runScan(isManual = false) {
     if (scanning && !isManual) return;
     scanning = true;
     el('scanBtn').disabled = true;
+    el('ticker').textContent = "⚡ SCANNING AIRCRAFT FEEDS...";
 
-    const adsbPromise = fetchWithProxy('https://api.adsb.lol/v2/mil');
     if (isManual) {
-      await fetchAndRenderNews();
+        await fetchAndRenderNews();
     }
 
-    const adsbData = await adsbPromise;
+    const adsbLolPromise = fetchWithProxy('https://api.adsb.lol/v2/mil');
+    const openSkyPromise = fetchWithProxy('https://opensky-network.org/api/states/all?lamin=22&lamax=41&lomin=44&lomax=73');
+
+    const [adsbData, openSkyData] = await Promise.all([adsbLolPromise, openSkyPromise]);
+
+    let mergedAircraft = [];
 
     if (adsbData && adsbData.ac && adsbData.ac.length > 0) {
-        allAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
-    } else {
-        allAircraft = [];
-        el('ticker').innerHTML = `<span style="color:#f44336;font-weight:700">🚨 AIRCRAFT FEED FAILED — ALL PROXIES EXHAUSTED OR API DOWN</span>`;
+        const adsbAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
+        mergedAircraft.push(...adsbAircraft);
+    }
+
+    if (openSkyData && openSkyData.states && openSkyData.states.length > 0) {
+        const openSkyAircraft = openSkyData.states.filter(s => s[6] && s[5]).map(s => ({
+            lat: s[6], lon: s[5], hex: s[0], gs: s[9], alt: s[7], type: 'fighter'
+        }));
+        mergedAircraft.push(...openSkyAircraft);
+    }
+    
+    const aircraftMap = new Map();
+    mergedAircraft.forEach(ac => {
+        if (!aircraftMap.has(ac.hex) || (aircraftMap.get(ac.hex).type === 'fighter' && ac.type !== 'fighter')) {
+            aircraftMap.set(ac.hex, ac);
+        }
+    });
+
+    allAircraft = Array.from(aircraftMap.values());
+
+    if (allAircraft.length === 0) {
+        el('ticker').innerHTML = `<span style="color:#f44336;font-weight:700">🚨 AIRCRAFT FEED FAILED — ALL PROXIES EXHAUSTED OR APIs DOWN</span>`;
     }
     
     renderAircraft();
@@ -253,6 +290,27 @@ async function runScan(isManual = false) {
 
     scanning = false;
     el('scanBtn').disabled = false;
+}
+
+// ==================== UI RENDERING ======================
+
+function renderAircraft() {
+    aircraftClusterGroup.clearLayers();
+    allAircraft.forEach(ac => {
+        const e = EMAP[ac.type] || '✈️';
+        const big = ac.type === 'tanker' || ac.type === 'bomber' || ac.type === 'cargo';
+        const marker = L.marker([ac.lat, ac.lon], {
+            icon: L.divIcon({
+                html: `<div class="emoji-marker${big ? ' tanker' : ''}">${e}</div>`,
+                className: '',
+                iconSize: [big ? 24 : 20, big ? 24 : 20]
+            })
+        });
+        marker.bindPopup(`<b>${e} ${(ac.type || 'AIRCRAFT').toUpperCase()}</b> · ${ac.hex}<br><small>${ac.gs||'?'} kt · ${(ac.alt||0).toLocaleString()} ft</small>`);
+        marker.addTo(aircraftClusterGroup);
+    });
+    el('aircraftCount').textContent = allAircraft.length;
+    el('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
 }
 
 async function fetchAndRenderNews() {
@@ -263,7 +321,7 @@ async function fetchAndRenderNews() {
     ticker.textContent = "⚡ PULLING NEWSAPI...";
     ncCountEl.textContent = "";
 
-    const url = `https://newsapi.org/v2/everything?q=(iran OR tehran OR IRGC OR hezbollah)&apiKey=${NEWS_API_KEY}&sortBy=publishedAt&pageSize=40`;
+    const url = `https://newsapi.org/v2/everything?q=(iran OR tehran OR IRGC OR hezbollah)&apiKey=${NEWS_API_KEY}&language=en&sortBy=publishedAt&pageSize=40`;
     const data = await fetchWithProxy(url);
 
     if (data && data.status === 'ok' && data.articles && data.articles.length > 0) {
@@ -274,7 +332,6 @@ async function fetchAndRenderNews() {
         }));
         renderNewsUI();
     } else {
-        // BIG RED ERROR — pure real failed
         newsStreamEl.innerHTML = `<div class="big-red-error">🚨 NEWSAPI FEED FAILED<br><br>ALL PROXIES BLOCKED OR NEWSAPI FREE TIER RESTRICTIONS<br><br>Real data unavailable from browser. SCAN to retry.</div>`;
         ncCountEl.textContent = "ERROR";
         ticker.innerHTML = `<span style="color:#f44336">🚨 NEWS FEED FAILED — PROXIES EXHAUSTED</span>`;
@@ -302,18 +359,6 @@ function renderNewsUI() {
     if (allNews.length > 0) {
         el('ticker').innerHTML = `🚨 <span style="color:#ff7043">LIVE:</span> ${allNews[0].title.substring(0, 55)}...`;
     }
-}
-
-function renderAircraft() {
-    aircraftClusterGroup.clearLayers();
-    allAircraft.forEach(ac => {
-        const e = {'fighter':'✈️', 'tanker':'⛽'}[ac.type] || '✈️';
-        L.marker([ac.lat, ac.lon], { icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`}) })
-         .bindPopup(`<b>${(ac.type || 'MIL').toUpperCase()}</b><br>${ac.hex}`)
-         .addTo(aircraftClusterGroup);
-    });
-    el('aircraftCount').textContent = allAircraft.length;
-    el('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
 }
 
 function buildOSINTLab(filter = '') {
