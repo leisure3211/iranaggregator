@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRAN TENSION MONITOR v10.0 — FINAL</title>
+<title>IRAN TENSION MONITOR v10.2 — PURE REAL DATA ONLY</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -41,7 +41,8 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .nc-title { font-size: 12px; font-weight: 700; color: var(--accent); }
 .nc-count { font-family: 'Courier New', monospace; font-size: 11px; color: var(--green); margin-left: auto; }
 #news-stream { flex: 1; overflow-y: auto; }
-.error-message { padding: 40px 20px; text-align: center; color: var(--warn); font-size: 13px; }
+.error-message, .big-red-error { padding: 60px 20px; text-align: center; color: #fff; font-size: 18px; font-weight: 700; background: var(--danger); border: 4px solid #b71c1c; margin: 20px; border-radius: 8px; line-height: 1.4; }
+.big-red-error { font-size: 22px; }
 .ns-item { display: flex; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #162030; cursor: pointer; align-items: flex-start; }
 .ns-item:hover { background: #122035; }
 .ns-item.MILITARY { border-left: 3px solid var(--warn); }
@@ -101,9 +102,9 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 
 <div id="header">
   <div class="logo">🌍 IRAN TENSION MONITOR</div>
-  <div class="badge">v10.0 FINAL</div>
+  <div class="badge">v10.2 PURE REAL</div>
   <div class="live-dot"></div>
-  <div id="ticker">INITIALIZING...</div>
+  <div id="ticker">ATTEMPTING PURE REAL-TIME FEEDS...</div>
   <div id="clock"></div>
 </div>
 
@@ -198,34 +199,53 @@ function buildStaticLayers() {
     el('carrierCount').textContent = "1";
 }
 
-// ==================== CORE DATA & SCANNING =====================
-async function fetchWithProxy(url) {
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-    try {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error(`Fetch error for ${url}:`, error);
-        return null; 
+// ==================== MULTI-PROXY (best chance for pure real data) ====================
+async function fetchWithProxy(targetUrl) {
+    const proxyList = [
+        (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+        (u) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+        (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`
+    ];
+
+    for (const buildProxy of proxyList) {
+        try {
+            const proxyUrl = buildProxy(targetUrl);
+            const res = await fetch(proxyUrl, { cache: 'no-store' });
+            if (!res.ok) continue;
+
+            let data;
+            if (proxyUrl.includes('allorigins.win')) {
+                const wrapper = await res.json();
+                data = JSON.parse(wrapper.contents);
+            } else {
+                data = await res.json();
+            }
+            return data;
+        } catch (e) {
+            console.warn(`Proxy failed for ${targetUrl}`);
+        }
     }
+    return null;   // ALL proxies failed → trigger big red error
 }
 
+// ==================== CORE SCANNING (PURE REAL ONLY) ====================
 async function runScan(isManual = false) {
     if (scanning && !isManual) return;
     scanning = true;
     el('scanBtn').disabled = true;
 
     const adsbPromise = fetchWithProxy('https://api.adsb.lol/v2/mil');
-    const newsPromise = isManual ? fetchAndRenderNews() : Promise.resolve();
+    if (isManual) {
+      await fetchAndRenderNews();
+    }
 
-    const [adsbData] = await Promise.all([adsbPromise, newsPromise]);
+    const adsbData = await adsbPromise;
 
-    if (adsbData && adsbData.ac) {
+    if (adsbData && adsbData.ac && adsbData.ac.length > 0) {
         allAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
     } else {
-        allAircraft = []; 
-        el('ticker').textContent = "⚠️ AIRCRAFT FEED FAILED";
+        allAircraft = [];
+        el('ticker').innerHTML = `<span style="color:#f44336;font-weight:700">🚨 AIRCRAFT FEED FAILED — ALL PROXIES EXHAUSTED OR API DOWN</span>`;
     }
     
     renderAircraft();
@@ -235,43 +255,38 @@ async function runScan(isManual = false) {
     el('scanBtn').disabled = false;
 }
 
-// ==================== UI RENDERING =====================
-function renderAircraft() {
-    aircraftClusterGroup.clearLayers();
-    allAircraft.forEach(ac => {
-        const e = {'fighter':'✈️', 'tanker':'⛽'}[ac.type] || '✈️';
-        L.marker([ac.lat, ac.lon], { icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`}) })
-         .bindPopup(`<b>${(ac.type || 'MIL').toUpperCase()}</b><br>${ac.hex}`)
-         .addTo(aircraftClusterGroup);
-    });
-    el('aircraftCount').textContent = allAircraft.length;
-    el('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
-}
-
 async function fetchAndRenderNews() {
     const ticker = el('ticker');
     const newsStreamEl = el('news-stream');
     const ncCountEl = el('nc-count');
     
-    ticker.textContent = "⚡ PULLING LIVE WIRES...";
+    ticker.textContent = "⚡ PULLING NEWSAPI...";
     ncCountEl.textContent = "";
 
     const url = `https://newsapi.org/v2/everything?q=(iran OR tehran OR IRGC OR hezbollah)&apiKey=${NEWS_API_KEY}&sortBy=publishedAt&pageSize=40`;
     const data = await fetchWithProxy(url);
 
-    if(!data || data.status !== 'ok') {
-        ticker.textContent = "⚠️ NEWS FEED FAILED";
-        newsStreamEl.innerHTML = `<div class="error-message">Could not connect to news service. The CORS proxy may be down or blocking the request.</div>`;
+    if (data && data.status === 'ok' && data.articles && data.articles.length > 0) {
+        allNews = data.articles.map(article => ({
+            title: article.title, link: article.url, source: article.source.name,
+            timeAgo: new Date(article.publishedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            category: /strike|missile|attack|war|conflict/i.test(article.title) ? 'MILITARY' : ''
+        }));
+        renderNewsUI();
+    } else {
+        // BIG RED ERROR — pure real failed
+        newsStreamEl.innerHTML = `<div class="big-red-error">🚨 NEWSAPI FEED FAILED<br><br>ALL PROXIES BLOCKED OR NEWSAPI FREE TIER RESTRICTIONS<br><br>Real data unavailable from browser. SCAN to retry.</div>`;
         ncCountEl.textContent = "ERROR";
-        return;
+        ticker.innerHTML = `<span style="color:#f44336">🚨 NEWS FEED FAILED — PROXIES EXHAUSTED</span>`;
+        allNews = [];
     }
-    
-    allNews = data.articles.map(article => ({
-        title: article.title, link: article.url, source: article.source.name,
-        timeAgo: new Date(article.publishedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-        category: /strike|missile|attack/i.test(article.title) ? 'MILITARY' : ''
-    }));
+    return true;
+}
 
+function renderNewsUI() {
+    const newsStreamEl = el('news-stream');
+    const ncCountEl = el('nc-count');
+    
     newsStreamEl.innerHTML = allNews.map(item => {
         const initials = (item.source || "").replace(/[^A-Z]/g, '').substring(0,2) || "N";
         return `<div class="ns-item ${item.category}" onclick="window.open('${item.link}','_blank')">
@@ -282,8 +297,23 @@ async function fetchAndRenderNews() {
             </div>
         </div>`;
     }).join('');
-    ncCountEl.textContent = `${allNews.length} items`;
-    ticker.innerHTML = (allNews.length > 0) ? `🚨 <span style="color:#ff7043">LIVE:</span> ${allNews[0].title.substring(0, 50)}...` : "✅ Feeds nominal";
+    
+    ncCountEl.textContent = `${allNews.length} LIVE`;
+    if (allNews.length > 0) {
+        el('ticker').innerHTML = `🚨 <span style="color:#ff7043">LIVE:</span> ${allNews[0].title.substring(0, 55)}...`;
+    }
+}
+
+function renderAircraft() {
+    aircraftClusterGroup.clearLayers();
+    allAircraft.forEach(ac => {
+        const e = {'fighter':'✈️', 'tanker':'⛽'}[ac.type] || '✈️';
+        L.marker([ac.lat, ac.lon], { icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`}) })
+         .bindPopup(`<b>${(ac.type || 'MIL').toUpperCase()}</b><br>${ac.hex}`)
+         .addTo(aircraftClusterGroup);
+    });
+    el('aircraftCount').textContent = allAircraft.length;
+    el('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
 }
 
 function buildOSINTLab(filter = '') {
@@ -316,14 +346,14 @@ window.addEventListener('load', () => {
     el('methodSearch').addEventListener('input', (e) => buildOSINTLab(e.target.value));
     el('tab-briefing').innerHTML = `<h3>OSINT Summary</h3><p>Fusing multiple open-source intel streams to monitor geopolitical tensions.</p><h4>Core Methods</h4><ul><li><b>IMINT:</b> Imagery analysis</li><li><b>SIGINT:</b> Aircraft & Naval tracking</li><li><b>SOCMINT:</b> Social media & news</li></ul><a href="https://www.bellingcat.com/" target="_blank">Learn More →</a>`;
     
-    runScan(true);
-    setInterval(() => runScan(false), 180000); // Scan aircraft every 3 mins
-    setInterval(fetchAndRenderNews, 300000); // Scan news every 5 mins
-
+    el('scanBtn').disabled = false;
+    runScan(true);                              // first pure real attempt
+    setInterval(() => runScan(false), 180000);  // aircraft every 3 min
+    setInterval(fetchAndRenderNews, 300000);    // news every 5 min
 
   } catch (e) {
     console.error("Critical Initialization failed:", e);
-    document.body.innerHTML = "<h3>Critical Error. Check console.</h3>";
+    document.body.innerHTML = `<div style="color:#f44336;padding:80px;font-size:24px;text-align:center">CRITICAL ERROR — CHECK CONSOLE</div>`;
   }
 });
 </script>
