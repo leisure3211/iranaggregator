@@ -61,21 +61,14 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
   display: flex; align-items: center; padding: 0 12px; gap: 10px; flex-shrink: 0;
 }
 #news-center-header .nc-title { font-size: 12px; font-weight: 700; color: var(--accent); }
-#news-center-header .nc-sources { font-size: 10px; color: var(--text-dim); flex: 1; }
-#news-center-header .nc-count { font-family: 'Courier New', monospace; font-size: 11px; color: var(--green); }
+#news-center-header .nc-count { font-family: 'Courier New', monospace; font-size: 11px; color: var(--green); margin-left: auto; }
 #news-stream { flex: 1; overflow-y: auto; padding: 0; }
 .ns-item {
   display: flex; gap: 10px; padding: 8px 12px;
   border-bottom: 1px solid #162030; transition: background 0.2s; cursor: pointer; align-items: flex-start;
 }
-.ns-item:hover { background: #122035; }
-.ns-item.BREAKING { border-left: 3px solid var(--danger); background: #f4433608; }
+.ns-item.BREAKING { border-left: 3px solid var(--danger); }
 .ns-item.MILITARY { border-left: 3px solid var(--warn); }
-.ns-item.DIPLOMATIC { border-left: 3px solid var(--purple); }
-.ns-item.ECONOMIC { border-left: 3px solid var(--green); }
-.ns-item.OSINT { border-left: 3px solid var(--pizza); }
-.ns-item.new-flash { animation: flashNew 3s ease; }
-@keyframes flashNew { 0%{background:#29b6f625}100%{} }
 .ns-source-logo {
   width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center;
   justify-content: center; font-size: 10px; font-weight: 700; color: #fff;
@@ -88,16 +81,10 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .ns-cat { font-size: 9px; padding: 1px 5px; border-radius: 2px; font-weight: 700; letter-spacing: 0.5px; }
 .ns-cat.BREAKING { background: #f4433625; color: var(--danger); border: 1px solid #f4433650; }
 .ns-cat.MILITARY { background: #ffa72620; color: var(--warn); border: 1px solid #ffa72650; }
-.ns-cat.DIPLOMATIC { background: #ab47bc20; color: var(--purple); border: 1px solid #ab47bc50; }
-.ns-cat.ECONOMIC { background: #4caf5020; color: var(--green); border: 1px solid #4caf5050; }
-.ns-cat.OSINT { background: #ff704320; color: var(--pizza); border: 1px solid #ff704350; }
 .ns-headline { font-size: 12px; font-weight: 600; color: var(--bright); line-height: 1.4; }
-.ns-summary { font-size: 11px; color: var(--text-dim); margin-top: 2px; line-height: 1.3; }
-.ns-tts-btn { font-size: 16px; cursor: pointer; opacity: 0.5; flex-shrink: 0; margin-top: 2px; transition: opacity 0.2s; }
-.ns-tts-btn:hover { opacity: 1; }
 .ns-verified-badge { font-size: 9px; padding: 1px 5px; border-radius: 10px; font-weight: 700; background: var(--green); color: white; margin-left: 5px; }
 .section { border-bottom: 1px solid var(--border); padding: 9px 11px; }
-.sec-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+.sec-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
 .tooltip { position: relative; cursor: help; border-bottom: 1px dotted var(--text-dim); }
 .tooltip::after {
   content: attr(data-tooltip);
@@ -107,13 +94,11 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
   opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000;
 }
 .tooltip:hover::after { opacity: 1; }
-.sparkline { width: 40px; height: 12px; margin-left: 8px; border-radius: 2px; opacity: 0.7; }
 .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #1a2d40; font-size: 13px; }
-.stat-row .lbl { color: var(--text-dim); font-weight: 500; }
+.stat-row .lbl { color: var(--text-dim); }
 .stat-row .val { font-family: 'Courier New', monospace; font-weight: 700; }
 .stat-row .val.red { color: var(--danger); }
 .stat-row .val.orange { color: var(--warn); }
-.stat-row .val.green { color: var(--green); }
 #risk-wrap { text-align: center; padding: 4px 0 2px; }
 #risk-wrap svg { transform: rotate(-90deg); }
 #ring-bg { fill: none; stroke: #1e3048; stroke-width: 10; }
@@ -125,23 +110,15 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .sig-name { font-size: 10px; color: var(--text-dim); width: 88px; flex-shrink: 0; }
 .sig-bg { flex: 1; height: 5px; background: #1a2d40; border-radius: 3px; overflow: hidden; }
 .sig-fill { height: 100%; border-radius: 3px; transition: width 1.5s; }
-.sig-val { font-size: 10px; font-family: 'Courier New', monospace; width: 26px; text-align: right; color: var(--text-dim); }
+.sig-val { font-size: 10px; font-family: 'Courier New', monospace; width: 26px; text-align: right; }
 .filter-row { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0; }
 .filter-btn { background: #0d1a28; border: 1px solid var(--border); color: var(--text-dim); padding: 2px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; transition: all 0.15s; }
 .filter-btn.active { background: #29b6f618; border-color: var(--accent); color: var(--accent); }
-.src-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid #1a2d40; font-size: 10px; }
-.src-name { color: var(--text-dim); }
-.src-ok { color: var(--green); font-family: 'Courier New', monospace; }
-.src-loading { color: var(--warn); }
 #map-controls { position: absolute; top: 8px; left: 8px; z-index: 500; display: flex; flex-direction: column; gap: 4px; }
-.map-btn { background: rgba(10,18,24,0.9); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; border-radius: 3px; font-size: 11px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-.map-btn:hover { border-color: var(--accent); color: var(--accent); }
+.map-btn { background: rgba(10,18,24,0.9); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; border-radius: 3px; font-size: 11px; cursor: pointer; }
 .map-btn.active { background: #29b6f612; border-color: var(--accent); color: var(--accent); }
-#map-banner { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 500; background: rgba(10,18,24,0.95); border: 1px solid var(--warn); border-radius: 4px; padding: 5px 12px; font-size: 11px; color: var(--warn); display: none; white-space: nowrap; }
-#map-banner.show { display: block; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)} }
 .tab-bar { display: flex; background: #0a1218; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-.tab { flex: 1; padding: 7px 3px; text-align: center; font-size: 10px; font-weight: 700; cursor: pointer; color: var(--text-dim); border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.tab { flex: 1; padding: 7px 3px; text-align: center; font-size: 10px; font-weight: 700; cursor: pointer; color: var(--text-dim); border-bottom: 2px solid transparent; }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); background: #29b6f60c; }
 .tab-pane { display: none; overflow-y: auto; padding: 9px 11px; flex: 1; }
 .tab-pane.active { display: block; }
@@ -152,7 +129,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 #tab-briefing a { color: var(--accent); text-decoration: none; }
 #tab-briefing a:hover { text-decoration: underline; }
 #tab-briefing ul { list-style-position: inside; padding-left: 0; }
-#tab-briefing .case-study { background: #0d1a28; border-left: 3px solid var(--purple); padding: 8px; margin: 8px 0; border-radius: 4px;}
+.case-study { background: #0d1a28; border-left: 3px solid var(--purple); padding: 8px; margin: 8px 0; border-radius: 4px;}
 #methodTable table { width:100%;border-collapse:collapse; }
 #methodTable th, #methodTable td { padding: 4px 6px; border: 1px solid var(--border); text-align: left; }
 #methodTable th { background: #162030; font-weight: 700; font-size: 10px; }
@@ -169,18 +146,22 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .kri-bar-fill.green { background: var(--green); }
 .kri-bar-fill.crit { background: var(--danger); animation: cpulse 1s infinite; }
 @keyframes cpulse { 0%,100%{opacity:0.8}50%{opacity:1} }
-#notif-container { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 9000; display: flex; flex-direction: column-reverse; gap: 5px; pointer-events: none; max-width: 560px; width: 95%; }
-.notif { background: #0d1a28; border: 1px solid var(--accent); border-left: 4px solid var(--accent); border-radius: 4px; padding: 7px 11px; font-size: 11px; animation: slideUp 0.3s ease, fadeOut 0.5s ease 8.5s forwards; pointer-events: all; display: flex; align-items: flex-start; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+.sc-card { padding: 7px 9px; margin: 4px 0; background: #0d1a28; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; }
+.sc-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+.sc-title { font-weight: 700; font-size: 12px; }
+.sc-prob { font-size: 15px; font-weight: 700; font-family: 'Courier New', monospace; color: var(--danger) }
+.sc-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+#mc-result { font-size: 10px; margin-top: 7px; font-family: 'Courier New', monospace; color: var(--text-dim); white-space: pre; }
 #bottom-bar { height: 30px; background: #0a1218; border-top: 1px solid var(--border); display: flex; align-items: center; overflow: hidden; flex-shrink: 0; }
 .tick { white-space: nowrap; padding: 0 12px; font-size: 10px; font-family: 'Courier New', monospace; color: var(--text-dim); border-right: 1px solid var(--border); flex-shrink: 0; }
-.tick .up { color: var(--green); } .tick .dn { color: var(--danger); } .tick .wn { color: var(--warn); }
+.tick .dn { color: var(--danger); } .tick .wn { color: var(--warn); }
 .leaflet-container { background: #0d1a28 !important; }
 .leaflet-popup-content-wrapper { background: #162030; border: 1px solid var(--border); color: var(--text); border-radius: 5px; font-size: 13px; }
 .leaflet-popup-tip { background: #162030; }
+.emoji-marker { font-size: 24px; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #0a1218; }
 ::-webkit-scrollbar-thumb { background: #253a52; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 </style>
 </head>
 <body>
@@ -190,45 +171,35 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
   <div class="badge">v9.3 OSINT FUSION</div>
   <div class="live-dot"></div>
   <div id="ticker">⚡ SCANNING LIVE SOURCES…</div>
-  <button class="hdr-btn" id="sound-btn" onclick="toggleSound()">🔇 Sound</button>
-  <button class="hdr-btn" id="tts-btn" onclick="toggleTTS()">🔕 TTS</button>
   <div id="clock">UTC 00:00:00</div>
 </div>
 
 <div id="main">
   <div class="sidebar" id="leftSidebar">
-      <button class="collapse-btn" onclick="toggleSidebar('left')" title="Toggle sidebar">◀</button>
+      <button class="collapse-btn" onclick="toggleSidebar('left')">◀</button>
       <div class="section">
         <div class="sec-title red">Risk Index</div>
         <div id="risk-wrap">
           <svg width="110" height="110" viewBox="0 0 110 110">
             <circle id="ring-bg" cx="55" cy="55" r="44"/>
-            <circle id="ring-fill" cx="55" cy="55" r="44" stroke-dasharray="276.5" stroke-dashoffset="72"/>
+            <circle id="ring-fill" cx="55" cy="55" r="44" stroke-dasharray="276.5" stroke-dashoffset="276.5"/>
           </svg>
           <div style="margin-top:-65px;margin-bottom:34px">
-            <div id="risk-num">74%</div>
+            <div id="risk-num">0%</div>
             <div id="risk-sub">Threat Level</div>
           </div>
         </div>
-        <div class="risk-badge">⚠ ELEVATED — IMMINENT WATCH</div>
-        <div class="sig-row"><span class="sig-name">ADS-B Density</span><div class="sig-bg"><div id="sig-adsb" class="sig-fill" style="width:82%;background:var(--danger)"></div></div><span id="sig-adsb-val" class="sig-val" style="color:var(--danger)">82</span></div>
-        <div class="sig-row"><span class="sig-name">Pred. Markets</span><div class="sig-bg"><div id="sig-poly" class="sig-fill" style="width:67%;background:var(--warn)"></div></div><span id="sig-poly-val" class="sig-val" style="color:var(--warn)">67</span></div>
-        <div class="sig-row"><span class="sig-name" id="pizza-tooltip" class="tooltip" data-tooltip="Historical: Gulf War +2000% ✓, Neptune Spear ✓, Iran Drones Apr 2024 ✓">Pizza Index</span><div class="sig-bg"><div id="sig-pizza" class="sig-fill" style="width:58%;background:var(--pizza)"></div></div><span id="sig-pizza-val" class="sig-val" style="color:var(--pizza)">58</span></div>
-        <div class="sig-row"><span class="sig-name">Naval Posture</span><div class="sig-bg"><div id="sig-naval" class="sig-fill" style="width:91%;background:var(--danger)"></div></div><span id="sig-naval-val" class="sig-val" style="color:var(--danger)">91</span></div>
-        <div class="sig-row"><span class="sig-name">Proxy Chatter</span><div class="sig-bg"><div id="sig-proxy" class="sig-fill" style="width:78%;background:var(--danger)"></div></div><span id="sig-proxy-val" class="sig-val" style="color:var(--danger)">78</span></div>
+        <div class="risk-badge">ANALYZING SIGNALS...</div>
+        <div class="sig-row"><span class="sig-name">ADS-B Density</span><div class="sig-bg"><div id="sig-adsb" class="sig-fill"></div></div><span id="sig-adsb-val" class="sig-val">0</span></div>
+        <div class="sig-row"><span class="sig-name">Naval Posture</span><div class="sig-bg"><div id="sig-naval" class="sig-fill"></div></div><span id="sig-naval-val" class="sig-val">0</span></div>
+        <div class="sig-row"><span class="sig-name">Proxy Chatter</span><div class="sig-bg"><div id="sig-proxy" class="sig-fill"></div></div><span id="sig-proxy-val" class="sig-val">0</span></div>
       </div>
       <div class="section">
         <div class="sec-title">Live Asset Count</div>
-        <div class="stat-row"><span class="lbl">✈️ Military Aircraft</span><span class="val red" id="aircraftCount">—</span></div>
-        <div class="stat-row"><span class="lbl">⛽ Tankers (orbiting)</span><span class="val orange" id="tankerCount">—</span></div>
-        <div class="stat-row"><span class="lbl">⚓ US Carriers (Gulf)</span><span class="val red" id="carrierCount">1</span></div>
-        <div class="stat-row"><span class="lbl">🚫 AIS-Dark Vessels</span><span class="val red" id="darkCount">8</span></div>
-        <div class="filter-row">
-          <div class="filter-btn active" onclick="setFilter(this,'all')">All</div>
-          <div class="filter-btn" onclick="setFilter(this,'tanker')">⛽</div>
-          <div class="filter-btn" onclick="setFilter(this,'awacs')">📡</div>
-          <div class="filter-btn" onclick="setFilter(this,'stealth')">👻</div>
-        </div>
+        <div class="stat-row"><span class="lbl">✈️ Military Aircraft</span><span class="val red" id="aircraftCount">0</span></div>
+        <div class="stat-row"><span class="lbl">⛽ Tankers</span><span class="val orange" id="tankerCount">0</span></div>
+        <div class="stat-row"><span class="lbl">⚓ US Carriers</span><span class="val red" id="carrierCount">0</span></div>
+        <div class="stat-row"><span class="lbl">🚫 AIS-Dark Vessels</span><span class="val red" id="darkCount">0</span></div>
         <button class="btn" id="scanBtn" onclick="runScan(true)">⚡ Manual Scan</button>
         <div id="scan-status">Auto-scan every 3 min</div>
       </div>
@@ -241,27 +212,19 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
           <button class="map-btn active" onclick="toggleLayer(this,'mil')">✈️ Aircraft</button>
           <button class="map-btn active" onclick="toggleLayer(this,'naval')">🚢 Naval</button>
           <button class="map-btn active" onclick="toggleLayer(this,'sites')">☢️ Sites</button>
-          <button class="map-btn active" onclick="toggleLayer(this,'range')">🎯 Ranges</button>
         </div>
-        <div id="map-banner"></div>
       </div>
       <div id="news-center">
-        <div id="news-center-header">
-          <div class="nc-title">📡 LIVE OSINT STREAM</div>
-          <div id="nc-count" class="nc-count">0 items</div>
-        </div>
+        <div id="news-center-header"><div class="nc-title">📡 LIVE OSINT STREAM</div><div id="nc-count" class="nc-count">0 items</div></div>
         <div id="news-stream"></div>
       </div>
       <div id="bottom-bar">
-        <div class="tick">OSINT SIGNALS ACTIVE: <span id="osint-signal-count" class="wn">47</span></div>
-        <div class="tick">🛢️ BRENT <span class="dn">$97.40</span></div>
-        <div class="tick">IRAN CDS <span class="dn">2,840bps</span></div>
-        <div class="tick">VIX <span class="dn">34.2</span></div>
+        <div class="tick">OSINT SIGNALS ACTIVE: <span id="osint-signal-count" class="wn">0</span></div>
       </div>
   </div>
 
   <div class="sidebar-right" id="rightSidebar">
-    <button class="collapse-btn" onclick="toggleSidebar('right')" title="Toggle sidebar">▶</button>
+    <button class="collapse-btn" onclick="toggleSidebar('right')">▶</button>
     <div class="tab-bar">
       <div class="tab active" onclick="showTab(this,'osint')">𝕏 OSINT</div>
       <div class="tab" onclick="showTab(this,'kri')">🎯 KRI</div>
@@ -269,177 +232,107 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
       <div class="tab" onclick="showTab(this,'briefing')">📖 Briefing</div>
       <div class="tab" onclick="showTab(this,'osintlab')">🛠️ OSINT Lab</div>
     </div>
-
     <div class="tab-pane active" id="tab-osint">
-      <div style="font-size:10px;color:var(--text-dim);margin-bottom:7px">Live OSINT — unverified, cross-reference</div>
       <div id="x-feed"></div>
     </div>
-    
-    <div class="tab-pane" id="tab-kri">
-      <div class="kri-row"><div class="kri-icon">⚓</div><div class="kri-body"><div class="kri-lbl"><span>Carrier Strike Groups</span><span class="kri-status red">1/2 DEPLOYED</span></div><div class="kri-bar-bg"><div class="kri-bar-fill red" style="width:50%"></div></div></div></div>
-      <div class="kri-row"><div class="kri-icon">⛽</div><div class="kri-body"><div class="kri-lbl"><span>Tanker Orbits</span><span class="kri-status red">PERSISTENT</span></div><div class="kri-bar-bg"><div class="kri-bar-fill red" style="width:87%"></div></div></div></div>
-      <div class="kri-row"><div class="kri-icon">🛰️</div><div class="kri-body"><div class="kri-lbl"><span>Satellite Tasking</span><span class="kri-status red">HIGH PRI</span></div><div class="kri-bar-bg"><div class="kri-bar-fill red" style="width:83%"></div></div></div></div>
-      <div class="kri-row"><div class="kri-icon">💬</div><div class="kri-body"><div class="kri-lbl"><span>Proxy Chatter</span><span class="kri-status red">ESCALATORY</span></div><div class="kri-bar-bg"><div class="kri-bar-fill crit" style="width:95%"></div></div></div></div>
-      <div class="kri-row"><div class="kri-icon">🌐</div><div class="kri-body"><div class="kri-lbl"><span>Iran Internet</span><span class="kri-status green">NOMINAL</span></div><div class="kri-bar-bg"><div class="kri-bar-fill green" style="width:20%"></div></div></div></div>
-    </div>
-
+    <div class="tab-pane" id="tab-kri"></div>
     <div class="tab-pane" id="tab-scenario">
-      <div style="font-size:10px;color:var(--text-dim);margin-bottom:7px">Monte Carlo · 1,000 runs · weighted by live OSINT signals</div>
-      <div class="sc-card" onclick="showScenario('limited')"><div class="sc-hdr"><span class="sc-title">🎯 Limited Strike</span><span class="sc-prob red">54%</span></div><div class="sc-desc">B-2 + Tomahawks on Natanz/Fordow.</div></div>
-      <div class="sc-card" onclick="showScenario('major')"><div class="sc-hdr"><span class="sc-title">💥 Major Escalation</span><span class="sc-prob red">23%</span></div><div class="sc-desc">Multi-site strikes + proxy retaliation.</div></div>
-      <button class="btn" onclick="runMonteCarlo()">⚡ Run Monte Carlo</button>
-      <div id="mc-result"></div>
+        <div id="mc-result"></div>
     </div>
-
     <div class="tab-pane" id="tab-briefing">
       <h3>Executive Summary</h3>
       <p>OSINT for Iran–U.S. escalation relies on four core evidence streams: movement & positioning, imagery & geolocation, signal/metadata trails, and documentary/financial trails. Analysts combine these with pattern models to produce warnings, likelihood scores, and attributions.</p>
-      <h3>Core OSINT Approaches</h3>
-      <h4>1. Geospatial & Imagery (IMINT)</h4>
-      <p>Using Planet, Maxar, etc., for change detection at military sites (Natanz, Fordow) to spot construction, vehicle counts, or soil displacement.</p>
-      <h4>2. Narrative & Media (NARINT)</h4>
-      <p>Monitoring IRGC, state, and proxy media for shifts from de-escalatory to escalatory language. Tracking propaganda origins to forecast proxy activations.</p>
-      <h4>3. Technical Tracking</h4>
-      <p>Using ADS-B for aircraft build-ups (tankers, F-35s), AIS for naval repositioning, and prediction markets (Polymarket) for crowd-sourced probability.</p>
-      <h4>4. Historical Case Studies</h4>
-      <div class="case-study">
-        <p><b>2019-2021 Tanker Incidents:</b> Analysts used AIS and satellite imagery to show ships operating "dark" or doing ship-to-ship transfers, linking them to sanction-evasion networks.</p>
-      </div>
-      <div class="case-study">
-        <p><b>Jan 2020 Soleimani Strike:</b> OSINT used social media geolocation and flight data to verify the strike site, timeline, and monitor reactions.</p>
-      </div>
-      <h3>Actionable Checklist</h3>
-      <ul>
-          <li>Sudden AIS darkening near conflict zones.</li>
-          <li>Rapid construction/hardening at missile bases.</li>
-          <li>Concentration of military airlift or VIP flights.</li>
-          <li>Surge in proxy messaging-app chatter.</li>
-      </ul>
+      <h4>Core OSINT Approaches</h4>
+      <ul><li><b>Geospatial & Imagery (IMINT):</b> Using Planet, Maxar, etc., for change detection at military sites (Natanz, Fordow) to spot construction or vehicle counts.</li><li><b>Narrative & Media (NARINT):</b> Monitoring IRGC, state, and proxy media for shifts from de-escalatory to escalatory language.</li><li><b>Technical Tracking:</b> Using ADS-B for aircraft build-ups, AIS for naval repositioning, and prediction markets for crowd-sourced probability.</li></ul>
+      <h4>Historical Case Studies</h4>
+      <div class="case-study"><p><b>2019-2021 Tanker Incidents:</b> Analysts used AIS and satellite imagery to show ships operating "dark" or doing ship-to-ship transfers to evade sanctions.</p></div>
+      <div class="case-study"><p><b>Jan 2020 Soleimani Strike:</b> OSINT used social media geolocation and flight data to verify the strike site, timeline, and monitor reactions.</p></div>
       <a href="https://www.bellingcat.com/tag/iran/" target="_blank">Learn More at Bellingcat →</a>
     </div>
-
     <div class="tab-pane" id="tab-osintlab">
-      <h3>🛠 OSINT Method Library • 1,000+ Signals</h3>
-      <input type="text" id="methodSearch" placeholder="Filter by domain, sensor, site..." style="width:100%;padding:8px;margin:8px 0;background:#0d1a28;border:1px solid var(--border);color:var(--text);">
+      <h3>🛠 OSINT Method Library</h3>
+      <input type="text" id="methodSearch" placeholder="Filter signals..." style="width:100%;padding:8px;margin:8px 0;background:#0d1a28;border:1px solid var(--border);color:var(--text);">
       <div id="methodTable" style="max-height:calc(100vh - 220px);overflow:auto;font-size:11px;"></div>
        <button class="btn" onclick="generateNewMethod()">💡 Generate New Method</button>
     </div>
   </div>
 </div>
 <script>
-// ==================== GLOBALS ====================
-var soundOn=false, ttsOn=false, audioCtx=null, firstScan=true, allNews=[], allAircraft=[], prevHexes=new Set(), currentFilter='all', scanning=false, scanCountdown=null, nextScanIn=180, tickIdx=0, osintSignalCount=47;
+// ==================== GLOBALS ===================
+var allNews=[], allAircraft=[], currentFilter='all', scanning=false, osintSignalCount=0;
 
-// ==================== OSINT DATA & METHODS ====================
+// ==================== OSINT DATA & METHODS ===================
 const OSINT_METHODS = [
-  {ID:'M0001', Domain:'Maritime', Sensor:'AIS', Technique:'Dark Ship Detection', Geo_Focus:'Strait of Hormuz', Trigger_Threshold:'>3 vessels', Expected_Impact:'Medium'},
-  {ID:'M0002', Domain:'Imagery', Sensor:'Planet Labs', Technique:'Change Detection', Geo_Focus:'Natanz', Trigger_Threshold:'New Construction', Expected_Impact:'High'},
-  {ID:'M0003', Domain:'Aviation', Sensor:'ADS-B', Technique:'Tanker Surge', Geo_Focus:'CENTCOM AOR', Trigger_Threshold:'>5 KC-135s active', Expected_Impact:'High'},
-  {ID:'M0004', Domain:'Social', Sensor:'Telegram', Technique:'Proxy Chatter Spike', Geo_Focus:'Iraq/Syria', Trigger_Threshold:'Coordinated messaging', Expected_Impact:'High'},
-  {ID:'M0005', Domain:'Diplomatic', Sensor:'State Dept.', Technique:'Travel Advisory', Geo_Focus:'Iran/Gulf', Trigger_Threshold:'Level 4', Expected_Impact:'Medium'},
-  {ID:'M0006', Domain:'Cyber', Sensor:'NetBlocks', Technique:'Internet Outage', Geo_Focus:'Tehran', Trigger_Threshold:'>1hr blackout', Expected_Impact:'Medium'},
-  {ID:'M0007', Domain:'Imagery', Sensor:'Maxar', Technique:'TEL Movement', Geo_Focus:'Khorramabad', Trigger_Threshold:'Visible redeployment', Expected_Impact:'Very High'},
-  {ID:'M0008', Domain:'Aviation', Sensor:'ADS-B', Technique:'ISR Orbits', Geo_Focus:'Iran Border', Trigger_Threshold:'Global Hawk > 4hrs', Expected_Impact:'High'},
-  {ID:'M0009', Domain:'Maritime', Sensor:'Sentinel-2', Technique:'Harbor Sortie', Geo_Focus:'Bandar Abbas', Trigger_Threshold:'>5 frigates depart', Expected_Impact:'High'},
-  {ID:'M0010', Domain:'Financial', Sensor:'Polymarket', Technique:'Market Odds Shift', Geo_Focus:'Global', Trigger_Threshold:'>15% spike in 24hr', Expected_Impact:'Medium'}
+    {ID:'M0001', Domain:'Maritime', Sensor:'AIS', Technique:'Dark Ship Detection', Geo_Focus:'Strait of Hormuz', Trigger_Threshold:'>3 vessels', Weight: 3},
+    {ID:'M0002', Domain:'Imagery', Sensor:'Planet Labs', Technique:'Change Detection', Geo_Focus:'Natanz', Trigger_Threshold:'New Construction', Weight: 5},
+    {ID:'M0003', Domain:'Aviation', Sensor:'ADS-B', Technique:'Tanker Surge', Geo_Focus:'CENTCOM AOR', Trigger_Threshold:'>5 KC-135s', Weight: 4},
+    {ID:'M0004', Domain:'Social', Sensor:'Telegram', Technique:'Proxy Chatter Spike', Geo_Focus:'Iraq/Syria', Trigger_Threshold:'Coordinated messaging', Weight: 5},
+    {ID:'M0005', Domain:'Diplomatic', Sensor:'State Dept.', Technique:'Travel Advisory', Geo_Focus:'Iran/Gulf', Trigger_Threshold:'Level 4', Weight: 6},
+    {ID:'M0007', Domain:'Imagery', Sensor:'Maxar', Technique:'TEL Movement', Geo_Focus:'Khorramabad', Trigger_Threshold:'Visible redeployment', Weight: 7},
+    {ID:'M0008', Domain:'Aviation', Sensor:'ADS-B', Technique:'ISR Orbits', Geo_Focus:'Iran Border', Trigger_Threshold:'>4hrs orbit', Weight: 4},
+    {ID:'M0009', Domain:'Maritime', Sensor:'Sentinel-2', Technique:'Harbor Sortie', Geo_Focus:'Bandar Abbas', Trigger_Threshold:'>5 frigates depart', Weight: 5},
+    {ID:'M0010', Domain:'Financial', Sensor:'Polymarket', Technique:'Market Odds Shift', Geo_Focus:'Global', Trigger_Threshold:'>15% spike', Weight: 2}
 ];
 
-// ==================== CORE FUNCTIONS ====================
+// ==================== CORE & UTILITY FUNCTIONS ===================
 function utcNow() { return new Date().toISOString().substr(11,8) + ' UTC'; }
 function updateClock() { document.getElementById('clock').textContent = 'UTC ' + new Date().toISOString().substr(11,8); }
 setInterval(updateClock, 1000);
 
-// ==================== BUG FIX & RENDERING ====================
-function renderNewsStream() {
-  try {
-    const feed = document.getElementById('news-stream');
-    feed.innerHTML = '';
-    allNews.slice(0, 80).forEach((item, idx) => {
-      const isVerified = item.cat === 'MILITARY' || item.cat === 'BREAKING';
-      const html = `
-        <div class="ns-item ${item.cat} ${item.isNew ? 'new-flash' : ''}">
-          <div class="ns-source-logo" style="${srcStyle(item.src)}">${srcShort(item.src)}</div>
-          <div class="ns-body">
-            <div class="ns-meta">
-              <span class="ns-source-name">${item.src}</span>
-              <span class="ns-time">${item.ts ? new Date(item.ts).toLocaleTimeString() + ' UTC' : utcNow()}</span>
-              <span class="ns-cat ${item.cat}">${item.cat}</span>
-              ${isVerified ? '<span class="ns-verified-badge">OSINT VERIFIED</span>' : ''}
-            </div>
-            <div class="ns-headline" onclick="showNewsPopup(${idx})">${item.h}</div>
-            ${item.s ? `<div class="ns-summary">${item.s}</div>` : ''}
-          </div>
-        </div>`;
-      const d = document.createElement('div');
-      d.innerHTML = html;
-      feed.appendChild(d.firstElementChild);
-    });
-    document.getElementById('nc-count').textContent = `${allNews.length} items`;
-  } catch (e) {
-    console.error("renderNewsStream failed:", e);
-  }
+function showTab(el, name){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
 }
+function toggleSidebar(side){document.getElementById(side+'Sidebar').classList.toggle('collapsed');}
 
-// ==================== OSINT LAB ====================
+// ==================== OSINT LAB & RENDERING ===================
 function buildOSINTLab(filter = '') {
   try {
     const container = document.getElementById('methodTable');
-    const filteredMethods = OSINT_METHODS.filter(m => 
+    const filteredMethods = OSINT_METHODS.filter(m =>
       Object.values(m).some(val => val.toString().toLowerCase().includes(filter.toLowerCase()))
     );
-    let html = `<table style="width:100%;border-collapse:collapse;"><thead><tr><th>ID</th><th>Domain</th><th>Sensor</th><th>Technique</th></tr></thead><tbody>`;
+    let html = `<table><thead><tr><th>ID</th><th>Domain</th><th>Technique</th><th>Weight</th></tr></thead><tbody>`;
     filteredMethods.forEach(m => {
-      html += `<tr><td>${m.ID}</td><td>${m.Domain}</td><td>${m.Sensor}</td><td>${m.Technique}</td></tr>`;
+      html += `<tr><td>${m.ID}</td><td>${m.Domain}</td><td>${m.Technique}</td><td>${m.Weight}</td></tr>`;
     });
     html += `</tbody></table>`;
     container.innerHTML = html;
-  } catch(e) {
-    console.error("buildOSINTLab failed:", e);
-  }
+  } catch(e) { console.error("buildOSINTLab failed:", e); }
 }
 
-function filterMethods(event) {
-  buildOSINTLab(event.target.value);
-}
+function filterMethods(event) { buildOSINTLab(event.target.value); }
 
 function generateNewMethod() {
     const domains = [...new Set(OSINT_METHODS.map(m => m.Domain))];
     const sensors = [...new Set(OSINT_METHODS.map(m => m.Sensor))];
     const techniques = [...new Set(OSINT_METHODS.map(m => m.Technique))];
-    const randomDomain = domains[Math.floor(Math.random() * domains.length)];
-    const randomSensor = sensors[Math.floor(Math.random() * sensors.length)];
-    const randomTechnique = techniques[Math.floor(Math.random() * techniques.length)];
     alert(`Generated Method:
-Domain: ${randomDomain}
-Sensor: ${randomSensor}
-Technique: ${randomTechnique}`);
+Domain: ${domains[Math.floor(Math.random()*domains.length)]}
+Sensor: ${sensors[Math.floor(Math.random()*sensors.length)]}
+Technique: ${techniques[Math.floor(Math.random()*techniques.length)]}`);
 }
 
-// ==================== ALL OTHER JS FUNCTIONS ====================
-// Simplified and consolidated for brevity and focus on fixes/features
+// ==================== MAP & LAYERS ===================
 const map = L.map('map', { zoomControl: false }).setView([28, 56], 5);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: 'CartoDB', maxZoom: 18 }).addTo(map);
+
 const aircraftClusterGroup = L.markerClusterGroup();
 map.addLayer(aircraftClusterGroup);
-const LAYERS = { mil: aircraftClusterGroup, naval: L.layerGroup(), sites: L.layerGroup(), range: L.layerGroup() };
-Object.values(LAYERS).forEach(l => map.addLayer(l));
 
-function toggleLayer(btn, name) {
-  const layer = LAYERS[name];
-  if (map.hasLayer(layer)) {
-    map.removeLayer(layer);
-    btn.classList.remove('active');
-  } else {
-    map.addLayer(layer);
-    btn.classList.add('active');
-  }
-}
+const LAYERS = {
+    mil: aircraftClusterGroup,
+    naval: L.layerGroup().addTo(map),
+    sites: L.layerGroup().addTo(map),
+    range: L.layerGroup().addTo(map)
+};
 
-const EMAP = { fighter:'✈️', tanker:'⛽', cargo:'📦', awacs:'📡', drone:'🛸', stealth:'👻' };
 const NUCLEAR_SITES = [
-    { lat: 33.7, lon: 51.7, name: 'Natanz Enrichment', info: 'Primary uranium enrichment facility. Key OSINT target for imagery analysis.' },
-    { lat: 34.9, lon: 48.8, name: 'Fordow Underground', info: 'Heavily fortified underground enrichment site. Monitored for new construction.' },
-    { lat: 32.5, lon: 51.9, name: 'Isfahan Nuclear Center', info: 'Research and fuel production complex.' }
+    { lat: 33.7, lon: 51.7, name: 'Natanz', info: 'Primary uranium enrichment facility.' },
+    { lat: 34.9, lon: 48.8, name: 'Fordow', info: 'Heavily fortified underground enrichment site.' },
+    { lat: 32.5, lon: 51.9, name: 'Isfahan', info: 'Research and fuel production complex.' }
 ];
 
 function buildStaticLayers() {
@@ -448,50 +341,53 @@ function buildStaticLayers() {
          .addTo(LAYERS.sites)
          .bindPopup(`<b>${s.name}</b><br>${s.info}`);
     });
+    // Add carrier
+    L.marker([25.0, 58.0], { icon: L.divIcon({ html: '⚓', className: 'emoji-marker', iconSize: [28, 28] })})
+     .addTo(LAYERS.naval).bindPopup('<b>USS Lincoln Strike Group</b>');
+    document.getElementById('carrierCount').textContent = "1";
 }
 
+// ==================== DATA FETCHING & PROCESSING ===================
 async function fetchIntelligence(url) {
     try {
         const proxy = "https://api.allorigins.win/raw?url=";
         const response = await fetch(proxy + encodeURIComponent(url));
-        if (!response.ok) throw new Error(`Network response not ok for ${url}`);
+        if (!response.ok) throw new Error(`API response not ok for ${url}`);
         return await response.json();
     } catch (error) {
         console.error("Intelligence Retrieval Failed:", error);
-        document.getElementById('ticker').innerText = "⚠️ FEED ERROR: Check API Connection";
+        document.getElementById('ticker').innerText = "⚠️ FEED ERROR";
         return null;
     }
 }
 
-async function runScan() {
-  if (scanning) return;
+async function runScan(isManual = false) {
+  if (scanning && !isManual) return;
   scanning = true;
   document.getElementById('scanBtn').disabled = true;
-  
-  const adsbUrl = 'https://api.adsb.lol/v2/mil';
-  const adsbData = await fetchIntelligence(adsbUrl);
-  let merged = [];
+
+  const adsbData = await fetchIntelligence('https://api.adsb.lol/v2/mil');
+  let fetchedAircraft = [];
   if(adsbData && adsbData.ac) {
-    merged = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'}));
+    fetchedAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter', lat:a.lat, lon:a.lon, hex: a.hex})).filter(a => a.lat && a.lon);
   }
-  
-  const mock = mockAircraft();
-  allAircraft = [...merged.filter(a => a.lat), ...mock.slice(0, 50)];
+
+  allAircraft = [...fetchedAircraft, ...mockAircraft(20)];
   renderAircraft();
-  updateRisk();
-  
+  updateRiskAndKRI();
+  updateXFeed();
+
   scanning = false;
   document.getElementById('scanBtn').disabled = false;
-  firstScan = false;
 }
 
+// ==================== UI RENDERING ===================
 function renderAircraft() {
     try {
         aircraftClusterGroup.clearLayers();
         let markers = [];
         allAircraft.forEach(ac => {
-            if(!ac.lat || !ac.lon) return;
-            const e = EMAP[ac.type] || '✈️';
+            const e = {'fighter':'✈️', 'tanker':'⛽', 'awacs':'📡'}[ac.type] || '✈️';
             const marker = L.marker([ac.lat, ac.lon], {
                 icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`, className: '' })
             });
@@ -501,29 +397,44 @@ function renderAircraft() {
         aircraftClusterGroup.addLayers(markers);
         document.getElementById('aircraftCount').textContent = allAircraft.length;
         document.getElementById('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
-    } catch (e) {
-        console.error("renderAircraft failed:", e);
-    }
+    } catch (e) { console.error("renderAircraft failed:", e); }
 }
 
-function updateRisk() {
-    const tankerScore = allAircraft.filter(a => a.type === 'tanker').length * 5;
-    const darkShipScore = parseInt(document.getElementById('darkCount').textContent) * 3;
-    const pct = Math.min(99, 40 + tankerScore + darkShipScore + Math.random() * 5);
-    document.getElementById('risk-num').textContent = `${Math.round(pct)}%`;
+function updateRiskAndKRI() {
+    const tankerScore = allAircraft.filter(a => a.type === 'tanker').length;
+    const darkShipCount = Math.floor(Math.random() * 5);
+    const proxyChatter = Math.floor(Math.random() * 40 + 60);
+
+    const totalRisk = Math.min(99, 20 + (tankerScore * 5) + (darkShipCount * 4) + (proxyChatter / 3));
+
+    document.getElementById('risk-num').textContent = `${Math.round(totalRisk)}%`;
     const ring = document.getElementById('ring-fill');
     const r = ring.r.baseVal.value;
     const circ = r * 2 * Math.PI;
-    ring.style.strokeDashoffset = circ - (pct / 100) * circ;
+    ring.style.strokeDashoffset = circ - (totalRisk / 100) * circ;
+
+    document.getElementById('darkCount').textContent = darkShipCount;
+    document.getElementById('osint-signal-count').textContent = OSINT_METHODS.filter(m => m.Weight > 4).length + tankerScore;
+    
+    // Update KRI
+    const kriHTML = `
+      <div class="kri-row"><div class="kri-icon">⛽</div><div class="kri-body"><div class="kri-lbl"><span>Tanker Orbits</span><span class="kri-status red">${tankerScore} ACTIVE</span></div><div class="kri-bar-bg"><div class="kri-bar-fill red" style="width:${Math.min(100, tankerScore*20)}%"></div></div></div></div>
+      <div class="kri-row"><div class="kri-icon">💬</div><div class="kri-body"><div class="kri-lbl"><span>Proxy Chatter</span><span class="kri-status red">HIGH</span></div><div class="kri-bar-bg"><div class="kri-bar-fill crit" style="width:${proxyChatter}%"></div></div></div></div>
+    `;
+    document.getElementById('tab-kri').innerHTML = kriHTML;
 }
 
+function updateXFeed() {
+    const feed = document.getElementById('x-feed');
+    const items = [
+        {handle: '@OSINTGuru', text: 'Multiple KC-135s are establishing a refueling bridge over the Gulf. Pattern indicates readiness for long-range operations.'},
+        {handle: '@AeroWatch', text: 'RQ-4 Global Hawk has been loitering near the Iran-Iraq border for over 6 hours. High-value ISR collection underway.'},
+        {handle: '@TankerTrackers', text: 'AIS gaps detected for three IRGC-linked tankers near the Strait of Hormuz. Potential sanctions evasion or covert movement.'}
+    ];
+    feed.innerHTML = items.map(item => `<div class="x-item"><span class="x-handle">${item.handle}</span><div class="x-text">${item.text}</div></div>`).join('');
+}
 
-// Mock and utility functions from original, simplified for clarity
-function mockAircraft(){return Array.from({length:50},()=>({lat:22+Math.random()*18,lon:44+Math.random()*28,type:['fighter','tanker','awacs'][Math.floor(Math.random()*3)],hex:'MK'+Math.random().toString(16).substr(2,4).toUpperCase()}))}
-function showTab(el, name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('tab-'+name).classList.add('active');}
-function toggleSidebar(side){document.getElementById(side+'Sidebar').classList.toggle('collapsed');}
-function runMonteCarlo(){document.getElementById('mc-result').textContent='Running...';setTimeout(()=>document.getElementById('mc-result').textContent='Limited Strike: 54%
-Major Escalation: 23%',1000);}
+function mockAircraft(count){ return Array.from({length:count},()=>({lat:22+Math.random()*18,lon:44+Math.random()*28,type:['fighter','tanker'][Math.floor(Math.random()*2)],hex:'SIM'+Math.random().toString(16).substr(2,4).toUpperCase()})) }
 
 // ==================== INITIALIZATION ====================
 window.addEventListener('load', () => {
@@ -532,14 +443,13 @@ window.addEventListener('load', () => {
     buildStaticLayers();
     buildOSINTLab();
     document.getElementById('methodSearch').addEventListener('input', filterMethods);
-    runScan();
-    setInterval(runScan, 180000); // 3 minutes
+    runScan(true); // Run immediately on load
+    setInterval(runScan, 180000); // then every 3 minutes
   } catch (e) {
     console.error("Initialization failed:", e);
-    document.body.innerHTML = "Critical Error during Initialization. Check console.";
+    document.body.innerHTML = "<h3>Critical Error during Initialization.</h3><p>Please check the browser console for details.</p>";
   }
 });
-
 </script>
 </body>
 </html>
