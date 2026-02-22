@@ -1,14 +1,241 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITUATION ROOM | LIVE TENSION MONITOR</title>
+    <style>
+        :root {
+            --bg-black: #0a0a0a;
+            --crt-green: #00ff41;
+            --alert-red: #ff3e3e;
+            --warning-orange: #ffae00;
+            --dark-gray: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--crt-green);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            text-transform: uppercase;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: auto auto auto;
+            gap: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--dark-gray);
+            border: 1px solid var(--crt-green);
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+            position: relative;
+        }
+
+        .card.alert { border-color: var(--alert-red); color: var(--alert-red); }
+        
+        .header {
+            grid-column: span 4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--crt-green);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .big-stat { font-size: 2.5rem; font-weight: bold; margin: 10px 0; }
+        .label { font-size: 0.8rem; opacity: 0.8; }
+        
+        #news-feed {
+            grid-column: span 2;
+            grid-row: span 2;
+            height: 400px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .news-item {
+            border-bottom: 1px solid #333;
+            padding: 8px 0;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .loading { font-style: italic; opacity: 0.5; }
+    </style>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+<div class="header">
+    <div>[ SYSTEM: ACTIVE ] [ SECTOR: MIDDLE EAST ]</div>
+    <div id="timestamp"></div>
+</div>
+
+<div class="dashboard">
+    <div class="card alert">
+        <div class="label">Polymarket: Strike Odds</div>
+        <div id="odds-val" class="big-stat">--%</div>
+        <div class="label" id="odds-market">Fetching market...</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Pentagon Pizza Index</div>
+        <div id="pizza-val" class="big-stat">LEVEL 1</div>
+        <div class="label" id="pizza-status">NORMAL OPS</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Brent Crude (Oil)</div>
+        <div id="oil-val" class="big-stat">$0.00</div>
+        <div id="oil-change" class="label">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Gold Spot (XAU)</div>
+        <div id="gold-val" class="big-stat">$0000</div>
+        <div id="gold-change" class="label">--</div>
+    </div>
+
+    <div id="news-feed" class="card">
+        <div class="label" style="border-bottom: 1px solid var(--crt-green); padding-bottom: 5px; margin-bottom: 10px;">INTEL STREAM (LIVE)</div>
+        <div id="news-content"></div>
+    </div>
+
+    <div class="card">
+        <div class="label">Active Flights (ME Bounding Box)</div>
+        <div id="flight-val" class="big-stat">--</div>
+        <div class="label">Live ADS-B Data</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Market Volatility (VIX)</div>
+        <div id="vix-val" class="big-stat">--</div>
+        <div class="label">"The Fear Index"</div>
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    const NEWS_API_KEY = 'efe3bda118f94631bd30780ba36c5983'; // Get at newsapi.org
+    const FINANCE_API_KEY = 'Z0RQGEME1F7FI3LU'; // Get at alphavantage.co
+    
+    // Coordinates for Middle East (Israel/Iran/Iraq/etc)
+    const BBOX = { lamin: 25, lomin: 30, lamax: 40, lomax: 60 };
+
+    // --- DATA FETCHING ---
+
+    async function fetchPolymarket() {
+        try {
+            // Fetching a popular "Will Israel/Iran..." market from Gamma API
+            const res = await fetch('https://gamma-api.polymarket.com/events?active=true&closed=false&q=Iran');
+            const data = await res.json();
+            if (data.length > 0) {
+                const market = data[0].markets[0];
+                const yesPrice = Math.round(market.outcomePrices[0] * 100);
+                document.getElementById('odds-val').innerText = yesPrice + '%';
+                document.getElementById('odds-market').innerText = market.question;
+                return yesPrice;
+            }
+        } catch (e) { console.error("Polymarket error", e); }
+        return 0;
+    }
+
+    async function fetchFlights() {
+        try {
+            // OpenSky Network Anonymous API (Rate limited, but works for low frequency)
+            const res = await fetch(`https://opensky-network.org/api/states/all?lamin=${BBOX.lamin}&lomin=${BBOX.lomin}&lamax=${BBOX.lamax}&lomax=${BBOX.lomax}`);
+            const data = await res.json();
+            document.getElementById('flight-val').innerText = data.states ? data.states.length : 0;
+        } catch (e) { console.error("OpenSky error", e); }
+    }
+
+    async function fetchMarketData() {
+        try {
+            // Brent Crude from Alpha Vantage (Global Commodities)
+            const oilRes = await fetch(`https://www.alphavantage.co/query?function=BRENT&apikey=${FINANCE_API_KEY}`);
+            const oilData = await oilRes.json();
+            const price = oilData.data[0].value;
+            document.getElementById('oil-val').innerText = '$' + price;
+
+            // Gold Spot
+            const goldRes = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=GLD&apikey=${FINANCE_API_KEY}`);
+            const goldData = await goldRes.json();
+            document.getElementById('gold-val').innerText = '$' + parseFloat(goldData['Global Quote']['05. price']).toFixed(2);
+        } catch (e) { console.error("Market data error", e); }
+    }
+
+    async function fetchNews() {
+        try {
+            const res = await fetch(`https://newsapi.org/v2/everything?q=conflict+iran+israel+strike&sortBy=publishedAt&apiKey=${NEWS_API_KEY}`);
+            const data = await res.json();
+            const container = document.getElementById('news-content');
+            container.innerHTML = '';
+            
+            data.articles.slice(0, 10).forEach(art => {
+                const div = document.createElement('div');
+                div.className = 'news-item';
+                div.innerHTML = `[${new Date(art.publishedAt).toLocaleTimeString()}] ${art.title}`;
+                container.appendChild(div);
+            });
+            return data.articles;
+        } catch (e) { console.error("News error", e); }
+        return [];
+    }
+
+    // Dynamic "Pizza Index" Logic
+    function updatePizzaIndex(odds, news) {
+        let threatLevel = 1;
+        let status = "NORMAL OPS";
+        
+        if (odds > 30) threatLevel = 2;
+        if (odds > 50) threatLevel = 3;
+        
+        const keywords = ['strike', 'attack', 'imminent', 'missile', 'emergency'];
+        const newsString = news.map(a => a.title.toLowerCase()).join(' ');
+        
+        keywords.forEach(word => {
+            if (newsString.includes(word)) threatLevel++;
+        });
+
+        const level = Math.min(Math.max(threatLevel, 1), 5);
+        const statusMap = ["", "NORMAL OPS", "GUARDED", "ELEVATED", "HIGH ALERT", "CRITICAL"];
+        
+        document.getElementById('pizza-val').innerText = "LEVEL " + level;
+        document.getElementById('pizza-status').innerText = statusMap[level];
+        
+        const card = document.getElementById('pizza-val').parentElement;
+        card.style.color = level > 3 ? 'var(--alert-red)' : 'var(--crt-green)';
+    }
+
+    async function updateDashboard() {
+        document.getElementById('timestamp').innerText = new Date().toLocaleString();
+        
+        const odds = await fetchPolymarket();
+        const news = await fetchNews();
+        await fetchFlights();
+        await fetchMarketData();
+        
+        updatePizzaIndex(odds, news);
+    }
+
+    // Run on load and every 5 minutes
+    updateDashboard();
+    setInterval(updateDashboard, 300000); 
+
+</script>
 </body>
 </html>
