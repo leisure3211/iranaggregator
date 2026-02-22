@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRAN TENSION MONITOR v9.6 — STABLE</title>
+<title>IRAN TENSION MONITOR v9.7 — RESILIENT</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -41,9 +41,9 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .nc-title { font-size: 12px; font-weight: 700; color: var(--accent); }
 .nc-count { font-family: 'Courier New', monospace; font-size: 11px; color: var(--green); margin-left: auto; }
 #news-stream { flex: 1; overflow-y: auto; }
+.error-message { padding: 40px 20px; text-align: center; color: var(--warn); font-size: 13px; }
 .ns-item { display: flex; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #162030; cursor: pointer; align-items: flex-start; }
 .ns-item:hover { background: #122035; }
-.ns-item.BREAKING { border-left: 3px solid var(--danger); }
 .ns-item.MILITARY { border-left: 3px solid var(--warn); }
 .ns-source-logo { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; text-align: center; }
 .ns-body { flex: 1; min-width: 0; }
@@ -51,7 +51,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 .ns-source-name { font-size: 10px; font-weight: 700; color: var(--text-dim); }
 .ns-time { font-size: 10px; font-family: 'Courier New', monospace; color: var(--text-dim); }
 .ns-cat { font-size: 9px; padding: 1px 5px; border-radius: 2px; font-weight: 700; }
-.ns-cat.BREAKING { background: #f4433625; color: var(--danger); }
 .ns-cat.MILITARY { background: #ffa72620; color: var(--warn); }
 .ns-headline { font-size: 12px; font-weight: 600; color: var(--bright); }
 .section { border-bottom: 1px solid var(--border); padding: 9px 11px; }
@@ -80,20 +79,13 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 #tab-briefing h3, #tab-osintlab h3 { font-size: 14px; color: var(--accent); margin: 12px 0 6px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
 #tab-briefing p { color: var(--text-dim); }
 #tab-briefing a { color: var(--accent); }
-.case-study { background: #0d1a28; border-left: 3px solid var(--purple); padding: 8px; margin: 8px 0; border-radius: 4px;}
 #methodTable table { width:100%;border-collapse:collapse; }
 #methodTable th, #methodTable td { padding: 4px 6px; border: 1px solid var(--border); text-align: left; }
-#methodTable th { background: #162030; }
-#methodTable tr:hover { background: #122035; }
 .kri-row { display: flex; align-items: center; gap: 7px; padding: 4px 0; border-bottom: 1px solid #1a2d40; }
 .kri-icon { font-size: 15px; width: 22px; text-align: center; }
-.kri-body { flex: 1; }
 .kri-lbl { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
-.kri-status { font-weight: 700; }
 .kri-bar-bg { height: 4px; background: #1a2d40; border-radius: 3px; }
 .kri-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease-out; }
-.kri-bar-fill.crit { animation: cpulse 1s infinite; }
-@keyframes cpulse { 0%,100%{opacity:0.8}50%{opacity:1} }
 #bottom-bar { height: 30px; background: #0a1218; border-top: 1px solid var(--border); display: flex; align-items: center; overflow: hidden; }
 .tick { padding: 0 12px; font-size: 10px; font-family: 'Courier New', monospace; color: var(--text-dim); border-right: 1px solid var(--border); }
 .tick .wn { color: var(--warn); }
@@ -109,7 +101,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 
 <div id="header">
   <div class="logo">🌍 IRAN TENSION MONITOR</div>
-  <div class="badge">v9.6 STABLE</div>
+  <div class="badge">v9.7 RESILIENT</div>
   <div class="live-dot"></div>
   <div id="ticker">INITIALIZING...</div>
   <div id="clock"></div>
@@ -173,8 +165,6 @@ const OSINT_METHODS = [
     {ID:'M0001', D:'Maritime', T:'Dark Ship Detection', W: 3},
     {ID:'M0002', D:'Imagery', T:'Change Detection', W: 5},
     {ID:'M0003', D:'Aviation', T:'Tanker Surge', W: 4},
-    {ID:'M0004', D:'Social', T:'Proxy Chatter Spike', W: 5},
-    {ID:'M0007', D:'Imagery', T:'TEL Movement', W: 7},
 ];
 let allNews = [], allAircraft = [], scanning = false;
 
@@ -196,13 +186,8 @@ const LAYERS = { mil: aircraftClusterGroup, naval: L.layerGroup().addTo(map), si
 const toggleLayer = (btn, name) => {
     const layer = LAYERS[name];
     if (!layer) return;
-    if (map.hasLayer(layer)) {
-        map.removeLayer(layer);
-        btn.classList.remove('active');
-    } else {
-        map.addLayer(layer);
-        btn.classList.add('active');
-    }
+    btn.classList.toggle('active');
+    if (map.hasLayer(layer)) map.removeLayer(layer); else map.addLayer(layer);
 }
 
 function buildStaticLayers() {
@@ -210,62 +195,76 @@ function buildStaticLayers() {
         L.marker([s.lat, s.lon], { icon: L.divIcon({ html: '☢️', className: 'emoji-marker'}) }).addTo(LAYERS.sites).bindPopup(`<b>${s.name}</b>`)
     );
     L.marker([25.0, 58.0], { icon: L.divIcon({ html: '⚓', className: 'emoji-marker'}) }).addTo(LAYERS.naval).bindPopup('<b>USS Lincoln</b>');
-    const carrierCountEl = el('carrierCount');
-    if (carrierCountEl) carrierCountEl.textContent = "1";
+    el('carrierCount').textContent = "1";
 }
 
 // ==================== CORE DATA & SCANNING =====================
 async function fetchWithProxy(url) {
+    // Using thingproxy as it appears more stable. It does not require URL encoding.
+    const proxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
     try {
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
         const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error(`Fetch failed: ${response.statusText}`);
-        return await response.json();
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const text = await response.text();
+        // The proxy returns plain text, so we need to parse it as JSON ourselves.
+        return JSON.parse(text);
     } catch (error) {
         console.error(`Fetch error for ${url}:`, error);
-        return null;
+        return null; // Return null on any fetch failure
     }
 }
 
 async function runScan(isManual = false) {
     if (scanning && !isManual) return;
     scanning = true;
-    const scanBtn = el('scanBtn');
-    if(scanBtn) scanBtn.disabled = true;
+    el('scanBtn').disabled = true;
 
     const adsbData = await fetchWithProxy('https://api.adsb.lol/v2/mil');
-    allAircraft = (adsbData?.ac || []).map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
+    if (adsbData && adsbData.ac) {
+        allAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
+    } else {
+        allAircraft = []; // Clear data on failure to prevent stale info
+        el('ticker').textContent = "⚠️ AIRCRAFT FEED FAILED";
+    }
     
     renderAircraft();
     updateRiskAndUI();
     if(isManual) await fetchAndRenderNews();
 
     scanning = false;
-    if(scanBtn) scanBtn.disabled = false;
+    el('scanBtn').disabled = false;
 }
 
 // ==================== UI RENDERING =====================
 function renderAircraft() {
-    if (!aircraftClusterGroup) return;
     aircraftClusterGroup.clearLayers();
     allAircraft.forEach(ac => {
         const e = {'fighter':'✈️', 'tanker':'⛽'}[ac.type] || '✈️';
         L.marker([ac.lat, ac.lon], { icon: L.divIcon({ html: `<div class="emoji-marker">${e}</div>`}) })
-         .bindPopup(`<b>${ac.type.toUpperCase()}</b><br>${ac.hex}`)
+         .bindPopup(`<b>${(ac.type || 'MIL').toUpperCase()}</b><br>${ac.hex}`)
          .addTo(aircraftClusterGroup);
     });
-    const aircraftCountEl = el('aircraftCount');
-    if (aircraftCountEl) aircraftCountEl.textContent = allAircraft.length;
-    const tankerCountEl = el('tankerCount');
-    if (tankerCountEl) tankerCountEl.textContent = allAircraft.filter(a => a.type === 'tanker').length;
+    el('aircraftCount').textContent = allAircraft.length;
+    el('tankerCount').textContent = allAircraft.filter(a => a.type === 'tanker').length;
 }
 
 async function fetchAndRenderNews() {
     const ticker = el('ticker');
-    if(ticker) ticker.textContent = "⚡ PULLING LIVE WIRES...";
+    const newsStreamEl = el('news-stream');
+    const ncCountEl = el('nc-count');
+    
+    ticker.textContent = "⚡ PULLING LIVE WIRES...";
+    ncCountEl.textContent = "";
+
     const url = `https://newsapi.org/v2/everything?q=(iran OR tehran OR IRGC OR hezbollah)&apiKey=${NEWS_API_KEY}&sortBy=publishedAt&pageSize=40`;
     const data = await fetchWithProxy(url);
-    if(!data || data.status !== 'ok') { if(ticker) ticker.textContent = "⚠️ NEWS FEED ERROR"; return; }
+
+    if(!data || data.status !== 'ok') {
+        ticker.textContent = "⚠️ NEWS FEED FAILED";
+        newsStreamEl.innerHTML = `<div class="error-message">Could not connect to news service. The CORS proxy may be down or blocking the request.</div>`;
+        ncCountEl.textContent = "ERROR";
+        return;
+    }
     
     allNews = data.articles.map(article => ({
         title: article.title, link: article.url, source: article.source.name,
@@ -273,70 +272,55 @@ async function fetchAndRenderNews() {
         category: /strike|missile|attack/i.test(article.title) ? 'MILITARY' : ''
     }));
 
-    const newsStreamEl = el('news-stream');
-    if (newsStreamEl) {
-        newsStreamEl.innerHTML = allNews.map(item => {
-            const initials = (item.source || "").replace(/[^A-Z]/g, '').substring(0,2) || "N";
-            return `<div class="ns-item ${item.category}" onclick="window.open('${item.link}','_blank')">
-                <div class="ns-source-logo" style="background:#162030;">${initials}</div>
-                <div class="ns-body">
-                    <div class="ns-meta"><span class="ns-source-name">${item.source}</span><span class="ns-time">${item.timeAgo}</span></div>
-                    <div class="ns-headline">${item.title}</div>
-                </div>
-            </div>`;
-        }).join('');
-    }
-    const ncCountEl = el('nc-count');
-    if (ncCountEl) ncCountEl.textContent = `${allNews.length} items`;
-    if(ticker && allNews.length > 0) ticker.innerHTML = `🚨 <span style="color:#ff7043">LIVE:</span> ${allNews[0].title.substring(0, 50)}...`;
+    newsStreamEl.innerHTML = allNews.map(item => {
+        const initials = (item.source || "").replace(/[^A-Z]/g, '').substring(0,2) || "N";
+        return `<div class="ns-item ${item.category}" onclick="window.open('${item.link}','_blank')">
+            <div class="ns-source-logo" style="background:#162030;">${initials}</div>
+            <div class="ns-body">
+                <div class="ns-meta"><span class="ns-source-name">${item.source}</span><span class="ns-time">${item.timeAgo}</span></div>
+                <div class="ns-headline">${item.title}</div>
+            </div>
+        </div>`;
+    }).join('');
+    ncCountEl.textContent = `${allNews.length} items`;
+    ticker.innerHTML = (allNews.length > 0) ? `🚨 <span style="color:#ff7043">LIVE:</span> ${allNews[0].title.substring(0, 50)}...` : "✅ Feeds nominal";
 }
 
 function buildOSINTLab(filter = '') {
-    const methodTableEl = el('methodTable');
-    if (!methodTableEl) return;
     const filtered = OSINT_METHODS.filter(m => Object.values(m).some(v => v.toString().toLowerCase().includes(filter.toLowerCase())));
-    methodTableEl.innerHTML = `<table><thead><tr><th>ID</th><th>Domain</th><th>Technique</th><th>W</th></tr></thead><tbody>${filtered.map(m=>`<tr><td>${m.ID}</td><td>${m.D}</td><td>${m.T}</td><td>${m.W}</td></tr>`).join('')}</tbody></table>`;
+    el('methodTable').innerHTML = `<table><thead><tr><th>ID</th><th>D</th><th>T</th><th>W</th></tr></thead><tbody>${filtered.map(m=>`<tr><td>${m.ID}</td><td>${m.D}</td><td>${m.T}</td><td>${m.W}</td></tr>`).join('')}</tbody></table>`;
 }
 
 function updateRiskAndUI() {
     const tankerScore = allAircraft.filter(a => a.type === 'tanker').length;
-    const totalRisk = Math.min(99, 20 + (tankerScore * 5));
+    const totalRisk = Math.min(99, 15 + (tankerScore * 5));
     
-    const riskNumEl = el('risk-num');
-    if(riskNumEl) riskNumEl.textContent = `${Math.round(totalRisk)}%`;
-    
+    el('risk-num').textContent = `${Math.round(totalRisk)}%`;
     const ring = el('ring-fill');
-    if(ring && ring.r && ring.r.baseVal) {
-        const r = ring.r.baseVal.value;
-        ring.style.strokeDashoffset = (r * 2 * Math.PI) * (1 - totalRisk / 100);
-    }
+    const r = ring.r.baseVal.value;
+    ring.style.strokeDashoffset = (r * 2 * Math.PI) * (1 - totalRisk / 100);
 
-    const riskBadgeEl = el('risk-badge');
-    if (riskBadgeEl) riskBadgeEl.textContent = totalRisk > 70 ? "HIGH ALERT" : totalRisk > 40 ? "ELEVATED" : "NOMINAL";
-    
-    const osintSignalEl = el('osint-signal-count');
-    if(osintSignalEl) osintSignalEl.textContent = OSINT_METHODS.length + tankerScore;
-    
-    const kriEl = el('tab-kri');
-    if(kriEl) kriEl.innerHTML = `<div class="kri-row"><div class="kri-icon">⛽</div><div class="kri-body"><div class="kri-lbl"><span>Tanker Orbits</span><span class="kri-status">${tankerScore} ACTIVE</span></div><div class="kri-bar-bg"><div class="kri-bar-fill" style="width:${Math.min(100, tankerScore*20)}%; background:var(--danger)"></div></div></div></div>`;
+    el('risk-badge').textContent = totalRisk > 70 ? "HIGH ALERT" : totalRisk > 40 ? "ELEVATED" : "NOMINAL";
+    el('osint-signal-count').textContent = OSINT_METHODS.length + tankerScore;
+    el('tab-kri').innerHTML = `<div class="kri-row"><div class="kri-icon">⛽</div><div class="kri-body"><div class="kri-lbl"><span>Tanker Orbits</span><span class="kri-status">${tankerScore} ACTIVE</span></div><div class="kri-bar-bg"><div class="kri-bar-fill" style="width:${Math.min(100, tankerScore*20)}%; background:var(--danger)"></div></div></div></div>`;
 }
 
 // ==================== INITIALIZATION ====================
 window.addEventListener('load', () => {
   try {
-    setInterval(() => { el('clock').textContent = new Date().toLocaleTimeString('en-US', { timeZone: 'UTC', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' UTC'; }, 1000);
+    setInterval(() => { el('clock').textContent = new Date().toLocaleTimeString('en-US', { timeZone: 'UTC', hour12: false }) + ' UTC'; }, 1000);
     buildStaticLayers();
     buildOSINTLab();
     el('methodSearch').addEventListener('input', (e) => buildOSINTLab(e.target.value));
-    el('tab-briefing').innerHTML = `<h3>OSINT Summary</h3><p>This dashboard fuses multiple open-source intelligence streams to monitor geopolitical tensions.</p><h4>Core Methods</h4><ul><li><b>IMINT:</b> Imagery analysis of key sites.</li><li><b>SIGINT:</b> Tracking aircraft (ADS-B) and ships (AIS).</li><li><b>SOCMINT:</b> Monitoring social media and news feeds.</li></ul><a href="https://www.bellingcat.com/" target="_blank">Learn More →</a>`;
+    el('tab-briefing').innerHTML = `<h3>OSINT Summary</h3><p>Fusing multiple open-source intel streams to monitor geopolitical tensions.</p><h4>Core Methods</h4><ul><li><b>IMINT:</b> Imagery analysis</li><li><b>SIGINT:</b> Aircraft & Naval tracking</li><li><b>SOCMINT:</b> Social media & news</li></ul><a href="https://www.bellingcat.com/" target="_blank">Learn More →</a>`;
     
     fetchAndRenderNews();
-    setInterval(fetchAndRenderNews, 135000);
+    setInterval(fetchAndRenderNews, 300000); // 5 mins
     runScan(true);
-    setInterval(runScan, 180000);
+    setInterval(runScan, 180000); // 3 mins
 
   } catch (e) {
-    console.error("Initialization failed:", e);
+    console.error("Critical Initialization failed:", e);
     document.body.innerHTML = "<h3>Critical Error. Check console.</h3>";
   }
 });
