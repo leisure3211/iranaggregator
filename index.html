@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRAN TENSION MONITOR v9.7 — RESILIENT</title>
+<title>IRAN TENSION MONITOR v9.8 — STABLE</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -101,7 +101,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, san
 
 <div id="header">
   <div class="logo">🌍 IRAN TENSION MONITOR</div>
-  <div class="badge">v9.7 RESILIENT</div>
+  <div class="badge">v9.8 STABLE</div>
   <div class="live-dot"></div>
   <div id="ticker">INITIALIZING...</div>
   <div id="clock"></div>
@@ -200,17 +200,14 @@ function buildStaticLayers() {
 
 // ==================== CORE DATA & SCANNING =====================
 async function fetchWithProxy(url) {
-    // Using thingproxy as it appears more stable. It does not require URL encoding.
-    const proxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
+    const proxyUrl = `https://cors.sh/${url}`;
     try {
-        const response = await fetch(proxyUrl);
+        const response = await fetch(proxyUrl, { headers: {'x-cors-api-key': 'temp_1234567890'} });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const text = await response.text();
-        // The proxy returns plain text, so we need to parse it as JSON ourselves.
-        return JSON.parse(text);
+        return await response.json();
     } catch (error) {
         console.error(`Fetch error for ${url}:`, error);
-        return null; // Return null on any fetch failure
+        return null; 
     }
 }
 
@@ -223,7 +220,7 @@ async function runScan(isManual = false) {
     if (adsbData && adsbData.ac) {
         allAircraft = adsbData.ac.map(a => ({...a, type: a.t || 'fighter'})).filter(a => a.lat && a.lon);
     } else {
-        allAircraft = []; // Clear data on failure to prevent stale info
+        allAircraft = []; 
         el('ticker').textContent = "⚠️ AIRCRAFT FEED FAILED";
     }
     
